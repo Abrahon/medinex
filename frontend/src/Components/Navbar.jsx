@@ -34,6 +34,7 @@ const Navbar = () => {
         <NavLink to="/about" className={navLinkStyles}><li>About</li></NavLink>
         <NavLink to="/blog" className={navLinkStyles}><li>Blog</li></NavLink>
         <NavLink to="/contact" className={navLinkStyles}><li>Contact</li></NavLink>
+        <NavLink to="/dashboard/admin" className={navLinkStyles}><li>Dashbaord</li></NavLink>
       </ul>
 
       {/* Profile or Login button */}
@@ -96,6 +97,7 @@ const Navbar = () => {
           <NavLink onClick={() => setMenuShow(false)} to="/about" className={navLinkStyles}>About</NavLink>
           <NavLink onClick={() => setMenuShow(false)} to="/blog" className={navLinkStyles}>Blog</NavLink>
           <NavLink onClick={() => setMenuShow(false)} to="/contact" className={navLinkStyles}>Contact</NavLink>
+          <NavLink onClick={() => setMenuShow(false)} to="/dashboard" className={navLinkStyles}>Dashboard</NavLink>
 
           {user ? (
             <>

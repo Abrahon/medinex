@@ -26,6 +26,8 @@ async function run() {
     await client.connect();
 
     const userCollection = client.db('medinex').collection('users');
+    const doctorCollection = client.db('medinex').collection('doctors');
+    const bookingCollection = client.db('medinex').collection('bokings');
 
     // POST route for user signup
     app.post('/users', async (req, res) => {
@@ -34,6 +36,50 @@ async function run() {
       const result = await userCollection.insertOne(newUser);
       res.send(result);
     });
+    // Pst Doctor
+    app.post('/doctors', async (req, res) => {
+      try {
+        const newDoctor = req.body;
+        console.log("Adding new doctor:", newDoctor);
+
+        if (!newDoctor.img) {
+          return res.status(400).json({ error: "Image is required" });
+        }
+    
+        const result = await doctorCollection.insertOne(newDoctor);
+        res.status(201).send(result);
+      } catch (error) {
+        console.error("Error adding doctor:", error);
+        res.status(500).json({ error: "Failed to add doctor" });
+      }
+    });
+    app.get('/bookings', async (req, res) => {
+      const email = req.query.email;
+      const result = await bookingCollection.find({ userEmail: email }).toArray();
+      res.send(result);
+    });
+    
+
+    // get data
+    app.get('/doctors', async (req, res) => {
+      try {
+        const doctors = await doctorCollection.find().toArray();
+        res.json(doctors);  // ✅ CORRECT way
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to fetch doctors" });
+      }
+    });
+    // booking
+    app.post('/bookings', async (req, res) => {
+      const booking = req.body;
+      const result = await bookingCollection.insertOne(booking);
+      res.send(result);
+    });
+    
+    
+    
+    
 
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);

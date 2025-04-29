@@ -20,6 +20,7 @@ import DoctorHome from '@/pages/Dashboard/Doctor/DoctorHome/DoctorHome';
 import MyPatients from '@/pages/Dashboard/Doctor/MyPatients/MyPatients';
 import SetSchedule from '@/pages/Dashboard/Doctor/SetSchedule/SetSchedule';
 import Signup from '@/pages/Authentication/Signup';
+import Checkout from '@/pages/Checkout/Checkout';
 
 // Create the router instance
 export const router = createBrowserRouter([
@@ -44,7 +45,7 @@ export const router = createBrowserRouter([
                 element:<Doctors/>
             },
             {
-                path:'/doctors/:speciality',
+                path:'/doctors/:specialty?',
                 element:<Doctors/>
             },
             {
@@ -56,7 +57,7 @@ export const router = createBrowserRouter([
                 element:<MyProfile/>
             },
             {
-                path:'/my-appoinment',
+                path:'/my-appointment',
                 element:<MyAppointment/>
             },
             {
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
                 path:'/sign-up',
                 element:<Signup></Signup>
             },
+            {
+                path:'/checkout',
+                element:<Checkout></Checkout>
+            }
             // {
             //     path:'/add-doctor',
             //     element:<AddDoctor></AddDoctor>
@@ -84,13 +89,13 @@ export const router = createBrowserRouter([
       children: [
         // Admin Routes
         { path: 'admin', element: <AdminHome /> },
-        { path: 'admin/users', element: <AllUser/> },
-        { path: 'admin/doctors', element: <AllDoctor />},
+        { path: 'admin/all-users', element: <AllUser/> },
+        { path: 'admin/all-doctors', element: <AllDoctor />},
         { path: 'admin/add-doctor', element: <AddDoctor /> },
   
         // Doctor Routes
         { path: 'doctor', element: <DoctorHome /> },
-        { path: 'doctor/patients', element: <MyPatients /> },
+        { path: 'doctor/my-patients', element: <MyPatients /> },
         { path: 'doctor/set-schedule', element: <SetSchedule /> },
   
         // User Routes (Patient)

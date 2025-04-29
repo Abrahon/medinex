@@ -1,13 +1,28 @@
-import { doctors } from "@/assets/assets/assets_frontend/assets";
+// import { doctors } from "@/assets/assets/assets_frontend/assets";
 
-import { createContext } from "react";
-
+import { createContext, useEffect, useState } from "react";
 
 
 export const AppContext = createContext()
 
 const AppProvider = ({children})=>{
-    
+
+    const[doctors,setDoctors] = useState([]);
+
+    // const [doctor, setDoctor] = useState([]);
+    useEffect(() => {
+        fetch('http://localhost:5000/doctors')
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return res.json();
+          })
+          .then((data) => setDoctors(data))
+          .catch((error) => console.error('Failed to fetch doctors:', error));
+      }, []);
+      
+      
 
     const appInfo = {
         doctors

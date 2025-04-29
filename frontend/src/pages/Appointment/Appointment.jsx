@@ -1,12 +1,15 @@
 import { assets } from '@/assets/assets/assets_frontend/assets';
 import RelatedDoctors from '@/Components/RelatedDoctors';
 import { AppContext } from '@/context/AppProvider';
+import { AuthContext } from '@/context/AuthProvider';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import Swal from 'sweetalert2';
 
 const Appointment = () => {
   const { _id } = useParams();
   const { doctors } = useContext(AppContext);
+  const { user } = useContext(AuthContext);
 
   const daysOfWeeks = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
@@ -20,6 +23,8 @@ const Appointment = () => {
     const docInfo = doctors.find(doc => doc._id === _id);
     setDocInfo(docInfo);
   };
+  
+  
 
   // Generate available time slots for the next 7 days
   const getAvailableSlots = async () => {
@@ -70,6 +75,57 @@ const Appointment = () => {
       getAvailableSlots();
     }
   }, [docInfo]);
+  const handleAppointment = async () => {
+    if (!user) {
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "You must be logged in to book an appointment!",
+      });
+      return;
+    }
+  
+    if (!slotTime) {
+      Swal.fire({
+        icon: "warning",
+        title: "Time Slot Required",
+        text: "Please select a time slot!",
+      });
+      return;
+    }
+  
+    const selectedSlot = docSlots[slotIndex][0].dateTime.toDateString() + ' ' + slotTime;
+  
+    const booking = {
+      userEmail: user.email,
+      img:docInfo.img,
+      userName: user.displayName,
+      doctorId: docInfo._id,
+      doctorName: docInfo.name,
+      specialty: docInfo.specialty,
+      appointmentTime: selectedSlot,
+      fees: docInfo.fees,
+      status: 'pending'
+    };
+  
+    try {
+      const res = await fetch('http://localhost:5000/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(booking)
+      });
+  
+      const data = await res.json();
+      if (data.insertedId) {
+        Swal.fire("Success!", "Appointment booked successfully!", "success");
+      } else {
+        Swal.fire("Error", "Failed to book appointment", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong!", "error");
+    }
+  };
 
   return (
     docInfo && (
@@ -77,7 +133,7 @@ const Appointment = () => {
         {/* Doctor Info Section */}
         <div className='flex flex-col sm:flex-row gap-6 my-10'>
           <div className='bg-naviblue rounded-lg'>
-            <img className='' src={docInfo.image} alt="" />
+            <img className='' src={docInfo.img} alt="" />
           </div>
           <div className='border-2 p-4 rounded-lg w-full'>
             <p className='flex text-3xl font-semibold'>
@@ -85,8 +141,8 @@ const Appointment = () => {
               <img src={assets.verified_icon} alt="" />
             </p>
             <p className='font-semibold text-lg'>
-              {docInfo.degree} - {docInfo.speciality}
-              <span className='ml-2'>{docInfo.experience}</span>
+              {docInfo.degree} - {docInfo.speciality ||docInfo.specialty}
+              <span className='ml-2 text-sm'>{docInfo.experience} years</span>
             </p>
             <p className='font-bold mt-4'>About</p>
             <p>
@@ -138,13 +194,13 @@ const Appointment = () => {
               ))}
           </div>
 
-          <button className='bg-naviblue px-12 py-4 text-white rounded-full my-6'>
+          <button onClick={handleAppointment } className='bg-naviblue px-12 py-4 text-white rounded-full my-6'>
             Book An Appointment
           </button>
         </div>
 
         {/* Related Doctors */}
-        <RelatedDoctors docId={_id} speciality={docInfo.speciality} />
+        <RelatedDoctors docId={_id} specialty={docInfo.specialty} />
       </div>
     )
   );

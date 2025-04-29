@@ -17,13 +17,13 @@ const TopDoctors = () => {
                 doctors.slice(0,10).map((item, index)=>(
                    <div onClick={()=>navigate(`/appoinment/${item._id}`)} className='border-2 rounded-lg'>
                      <div key={index} to=''>
-                        <img className='bg-stone-200' src={item.image} alt="" />
+                        <img className='bg-stone-200' src={item.img} alt="" />
                         <div className='px-2 pb-3'>
                         <div className='flex items-center gap-2 text-sm text-center text-green-500 my-2'>
                             <p className='w-2 h-2 bg-green-500 rounded-full'></p><p>Availabile</p>
                         </div>
                         <p className='text-lg'>{item.name}</p>
-                        <p className='text-xs'>{item.speciality}</p>
+                        <p className='text-xs'>{item.specialty}</p>
 
                         </div>
                         
