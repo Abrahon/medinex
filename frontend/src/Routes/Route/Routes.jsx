@@ -73,8 +73,11 @@ export const router = createBrowserRouter([
                 element:<Signup></Signup>
             },
             {
-                path:'/checkout',
+                path:'/checkout/:id',
                 element:<Checkout></Checkout>
+            },
+            {
+                path:'/payment/:id'
             }
             // {
             //     path:'/add-doctor',

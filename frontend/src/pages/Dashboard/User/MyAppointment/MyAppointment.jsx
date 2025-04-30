@@ -1,18 +1,21 @@
 import { AppContext } from '@/context/AppProvider'
 import { AuthContext } from '@/context/AuthProvider'
 import React, { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router';
 
 const MyAppointment = () => {
   const { user } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
   const userEmail = user?.email;
   console.log(userEmail);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userEmail) return;
       fetch(`http://localhost:5000/bookings?email=${userEmail}`)
         .then(res => res.json())
         .then((data) => {
+          // console.log("Navigating to checkout with ID:", item._id);
           console.log("Fetched bookings:", data);
           setBookings(data);
         })
@@ -43,7 +46,8 @@ const MyAppointment = () => {
               </div>
 
               <div className='flex flex-col gap-2 justify-end'>
-                <button className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-naviblue hover:text-white transition-all duration-300'>
+                <button onClick={() => navigate(`/checkout/${item._id}`)}
+                 className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-naviblue hover:text-white transition-all duration-30">
                   Pay Online
                 </button>
                 <button className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-red-600 hover:text-white transition-all duration-300'>

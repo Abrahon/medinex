@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
@@ -70,12 +70,49 @@ async function run() {
         res.status(500).json({ message: "Failed to fetch doctors" });
       }
     });
+    // const { ObjectId } = require('mongodb');
+
+app.get('/bookings/:id', async (req, res) => {
+  const id = req.params.id;
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).send({ error: "Invalid ID format" });
+  }
+
+  try {
+    const booking = await bookingCollection.findOne({ _id: new ObjectId(id) });
+    if (!booking) return res.status(404).send({ error: "Booking not found" });
+
+    res.send(booking);
+  } catch (err) {
+    res.status(500).send({ error: "Server error", message: err.message });
+  }
+});
+
     // booking
     app.post('/bookings', async (req, res) => {
       const booking = req.body;
       const result = await bookingCollection.insertOne(booking);
       res.send(result);
     });
+
+    app.patch('/bookings/:id', async (req, res) => {
+      const id = req.params.id;
+      const updateDoc = {
+        $set: {
+          status: req.body.status,
+          fullName: req.body.fullName,
+          email: req.body.email,
+          phone: req.body.phone,
+          age: req.body.age,
+          gender: req.body.gender,
+          paymentMethod: req.body.paymentMethod,
+        },
+      };
+      const result = await bookingCollection.updateOne({ _id: new ObjectId(id) }, updateDoc);
+      res.send(result);
+    });
+    
     
     
     
