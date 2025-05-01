@@ -25,7 +25,8 @@ const AppProvider = ({children})=>{
       
 
     const appInfo = {
-        doctors
+        doctors,
+        setDoctors
     }
     return(
        <AppContext.Provider value={appInfo}>

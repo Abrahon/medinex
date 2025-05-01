@@ -2,6 +2,7 @@ import { AppContext } from '@/context/AppProvider'
 import { AuthContext } from '@/context/AuthProvider'
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2';
 
 const MyAppointment = () => {
   const { user } = useContext(AuthContext);
@@ -22,6 +23,37 @@ const MyAppointment = () => {
         .catch(err => console.error("Error fetching bookings:", err));
     
   }, [userEmail]);
+
+  const handleDeleteBooking = (id) => {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const res = await fetch(`http://localhost:5000/bookings/${id}`, {
+              method: 'DELETE',
+            });
+    
+            if (res.ok) {
+              Swal.fire("Deleted!", "Booking has been deleted.", "success");
+              // Update local user list
+              setBookings(prev => prev.filter(book => book._id !== id));
+            } else {
+              Swal.fire("Error", "Failed to delete Booking.", "error");
+            }
+          } catch (err) {
+            console.error('Error deleting booking:', err);
+            Swal.fire("Error", "Something went wrong.", "error");
+          }
+        }
+      });
+    };
 
   return (
     <div className='my-10'>
@@ -50,7 +82,7 @@ const MyAppointment = () => {
                  className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-naviblue hover:text-white transition-all duration-30">
                   Pay Online
                 </button>
-                <button className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-red-600 hover:text-white transition-all duration-300'>
+                <button onClick={()=>handleDeleteBooking(item._id)} className='text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-red-600 hover:text-white transition-all duration-300'>
                   Cancel Appointment
                 </button>
               </div>

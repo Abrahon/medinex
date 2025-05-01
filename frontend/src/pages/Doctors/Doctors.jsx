@@ -9,6 +9,7 @@ const Doctors = () => {
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
   console.log(specialty);
+  const{id} = useParams()
 
   useEffect(() => {
     if (specialty) {
@@ -59,7 +60,7 @@ const Doctors = () => {
             filterDoc.map((item) => (
               <div
                 key={item._id}
-                onClick={() => navigate(`/appoinment/${item._id}`)}
+                onClick={() => navigate(`/appointment/${item._id}`)}
                 className="border rounded-lg cursor-pointer hover:shadow-md transition"
               >
                 <img src={item.img} alt={item.name} className="w-full h-40 object-cover rounded-t" />

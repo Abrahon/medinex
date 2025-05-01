@@ -19,58 +19,61 @@ const Signup = () => {
   
     const form = event.target;
     const name = form.name.value;
-    const image = form.image.value; // not photoURL
+    const image = form.image.value;
     const email = form.email.value;
     const newPassword = form.newPassword.value;
     const confirmPassword = form.confirmPassword.value;
   
-    const newValue = { name, image, email, newPassword, confirmPassword };
-  
-    console.log("signup information", newValue);
-  
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      Swal.fire("Error", "Passwords do not match!", "error");
       return;
     }
   
     createUser(email, newPassword)
       .then((result) => {
-        console.log(result.user);
-        const newUser = {name,email,image}
-        
-        // Save user to your backend
-        fetch('http://localhost:5000/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newUser)
-        })
-        .then(res => res.json())
-        .then(data => {
-          if(data.insertedId){
-            form.reset();
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'User created successfully',
-                showConfirmButton: false,
-                timer: 1500
-              })
-              navigate('/')
-        }
-
-        })
-        .catch(error => {
-          console.error('Error saving user to database:', error);
-        });
+        // ✅ Update Firebase profile
+        updateUserProfile(name, image)
+          .then(() => {
+            const newUser = { name, email, image };
   
+            // ✅ Save user to your backend
+            fetch("http://localhost:5000/users", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(newUser),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.insertedId) {
+                  form.reset();
+                  Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "User created successfully",
+                    showConfirmButton: false,
+                    timer: 1500,
+                  });
+                  navigate("/");
+                }
+              })
+              .catch((error) => {
+                console.error("Error saving user to DB:", error);
+              });
+          })
+          .catch((error) => {
+            console.error("Error updating user profile:", error);
+          });
       })
       .catch((error) => {
-        console.error('Error creating user:', error);
-        alert(error.message);
+        console.error("Error creating user:", error);
+        Swal.fire("Error", error.message, "error");
       });
   };
+  
+  
+  
   
 
   return (

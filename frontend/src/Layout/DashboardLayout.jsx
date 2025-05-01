@@ -19,7 +19,7 @@ const DashboardLayout = () => {
               <li><Link to="/dashboard/admin" className="block hover:underline">Admin Home</Link></li>
               <li><Link to="/dashboard/admin/add-doctor" className="block hover:underline">Add Doctor</Link></li>
               <li><Link to="/dashboard/admin/all-users" className="block hover:underline">All Users</Link></li>
-              <li><Link to="/dashboard/admin/all-doctors" className="block hover:underline">All Doctors</Link></li>
+              <li><Link to="/dashboard/admin/manage-doctor" className="block hover:underline">Manage Doctors</Link></li>
             </>
           )}
           

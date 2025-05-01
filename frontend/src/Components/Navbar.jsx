@@ -8,7 +8,8 @@ const Navbar = () => {
   const [menuShow, setMenuShow] = useState(false)
   const { user, logOut } = useContext(AuthContext)  // ✅ get user and logOut function
   const navigate = useNavigate();
-  console.log(user)
+  console.log(user?.photoURL)
+
 
   const handleLogOut = () => {
     logOut()
@@ -44,10 +45,17 @@ const Navbar = () => {
             {/* <p className="text-sm block md:hidden">{user?.displayName}</p> */}
             {/* <div className="flex items-center gap-2"> */}
             <div className="flex items-center gap-2">
-            <img className="w-12 h-12 rounded-full" src={user?.photoURL} alt="Profile" />
-            <p className="text-xs ">{user?.displayName}</p> 
+            {/* <img className="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/a/ACg8ocLSiMXXuqgOxRJdYebjD4U-zI2NuRHfS-Wyd84-VTlGLflYY4y8=s96-c" alt="Profile" /> */}
+            {/* <img className="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/a/ACg8ocLSiMXXuqgOxRJdYebjD4U-zI2NuRHfS-Wyd84-VTlGLflYY4y8=s96-c" alt="Profile" /> */}
+            <img
+             className="w-12 h-12 rounded-full"
+             src={user?.photoURL ? user.photoURL : "https://i.ibb.co/6BRR4mX/default-avatar.png"}
+             alt="Profile"
+             />
+
+            <p className="text-xs ">{user?.displayName || user?.name || "User"}</p> 
             {/* </div> */}
-              {/* <img className="w-5" src={assets.dropdown_icon} alt="Dropdown" /> */}
+             
             </div>
 
             {/* Dropdown */}

@@ -36,7 +36,7 @@ const Doctors = () => {
           {filterDoc?.map((item, index) => (
             <div
               key={item._id} // Ensure each item has a unique key
-              onClick={() => navigate(`/my-appoinment/${item._id}`)}
+              onClick={() => navigate(`/my-appointment/${item._id}`)}
               className="border-2 rounded-lg"
             >
               <Link to="">
