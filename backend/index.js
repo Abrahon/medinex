@@ -1,7 +1,10 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();  // <-- Move this to the top
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -29,7 +32,14 @@ async function run() {
     const doctorCollection = client.db('medinex').collection('doctors');
     const bookingCollection = client.db('medinex').collection('bokings');
     const doctorScheduleCollection = client.db('medinex').collection('schedules');
-
+    const paymentCollection = client.db('medinex').collection('payments');
+    // AdminRoute
+     app.get('/user/role', async(req, res)=>{
+      const email = req.query.email;
+      const result = await userCollection.findOne({email});
+      console.log("user role email", result);
+      res.send(result);
+     })
     // POST route for user signup
     app.post('/users', async (req, res) => {
       const newUser = req.body;
@@ -141,6 +151,7 @@ async function run() {
         res.status(500).json({ error: "Internal server error" });
       }
     });
+
     app.patch('/doctors/:id', async (req, res) => {
       const id = req.params.id;
       const updateDoc = {
@@ -156,7 +167,6 @@ async function run() {
       console.log(updateDoc)
       res.send(result);
     });
-    // const { ObjectId } = require('mongodb');
 
      // Booking Appointment
      app.get('/bookings', async (req, res) => {
@@ -205,11 +215,6 @@ app.get('/bookings/:id', async (req, res) => {
       }
     });
     
-    
-    
-    
-
-
     // booking
     app.post('/bookings', async (req, res) => {
       const booking = req.body;
@@ -274,9 +279,80 @@ app.post('/schedules', async (req, res) => {
   }
 });
 
-    
-    
-    
+// payment card
+app.post("/create-payment-intent", async (req, res) => {
+  const { fees } = req.body;
+  console.log("💸 Received price:", fees); // <-- Add this
+
+  const amount = parseInt(fees * 100);
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: "usd",
+      payment_method_types: ["card"],
+    });
+
+    console.log("✅ Sending client secret:", paymentIntent.client_secret); // <-- Log this too
+    res.send({ clientSecret: paymentIntent.client_secret });
+  } catch (err) {
+    console.error("❌ Stripe error:", err.message);
+    res.status(500).send({ error: err.message });
+  }
+});
+
+app.post('/payments', async (req, res) => {
+  const payment = req.body;  // Get the payment object from the request body
+  console.log("💰 Payment received:", payment);
+
+  // Destructure payment fields
+  const { appointmentId, fees, email, transactionId, name } = payment;
+  console.log(fees)
+
+  // Validate bookingId format
+  if (!appointmentId || !ObjectId.isValid(appointmentId)) {
+    return res.status(400).send({ error: "Invalid or missing appointmentId format" });
+  }
+  
+  const bookingObjectId = new ObjectId(appointmentId);
+  console.log("appointmentId :", appointmentId)
+
+  try {
+    // Insert payment record
+    const insertResult = await paymentCollection.insertOne(payment);
+    console.log("✅ Payment inserted with ID:", insertResult.insertedId);
+
+    // Find the booking before deleting
+    const foundBooking = await bookingCollection.findOne({ _id: bookingObjectId });
+    // console.log("founfdBooking",foundBooking)
+
+    if (!foundBooking) {
+      console.log("❌ No booking found for ID:", appointmentId);
+      return res.status(404).send({
+        success: false,
+        message: "Booking not found. Payment was saved, but booking not deleted."
+      });
+    }
+
+    console.log("🔍 Booking found:", foundBooking);
+
+    // Delete the booking
+    const deleteResult = await bookingCollection.deleteOne({ _id: bookingObjectId });
+
+    console.log("🗑 Booking deleted count:", deleteResult.deletedCount);
+
+    // Send response with details about the inserted payment and booking deletion
+    res.send({
+      success: true,
+      message: "Payment info saved & booking deleted",
+      insertedId: insertResult.insertedId,
+      deletedBooking: deleteResult.deletedCount
+    });
+
+  } catch (error) {
+    console.error("❌ Error processing payment:", error);
+    res.status(500).send({ error: "Server error while processing payment" });
+  }
+});
 
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
