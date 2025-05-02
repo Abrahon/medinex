@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Checkout = () => {
-  const { id } = useParams(); // booking ID
+  const {id } = useParams(); // booking ID
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [formData, setFormData] = useState({
@@ -97,9 +97,18 @@ const Checkout = () => {
             <input
               name="email"
               type="email"
-              required
+              
               onChange={handleChange}
               className="w-full rounded-full border p-2"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Price</label>
+            <input
+              type="text"
+              readOnly
+              value={booking?.fees || ''}
+              className="w-full rounded-full border p-2 bg-gray-100"
             />
           </div>
 

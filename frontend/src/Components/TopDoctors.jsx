@@ -15,7 +15,7 @@ const TopDoctors = () => {
         <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6  '>
             {
                 doctors.slice(0,10).map((item, index)=>(
-                   <div onClick={()=>navigate(`/appoinment/${item._id}`)} className='border-2 rounded-lg'>
+                   <div onClick={()=>navigate(`/appointment/${item._id}`)} className='border-2 rounded-lg'>
                      <div key={index} to=''>
                         <img className='bg-stone-200' src={item.img} alt="" />
                         <div className='px-2 pb-3'>

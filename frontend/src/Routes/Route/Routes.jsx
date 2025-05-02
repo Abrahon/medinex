@@ -22,6 +22,7 @@ import ManageDoctor from '@/pages/Dashboard/Admin/ManageDoctor/ManageDoctor';
 import UpdateDoctor from '@/pages/Dashboard/Admin/UpdateDoctor/UpdateDoctor';
 import { createBrowserRouter } from 'react-router-dom';
 import Payment from '@/pages/Payments/Payment';
+import PaymentSuccess from '@/pages/Payments/PaymentSuccess';
 
 // Create the router instance
 export const router = createBrowserRouter([
@@ -78,9 +79,13 @@ export const router = createBrowserRouter([
         element: <Checkout />,
       },
       {
-        path: '/payment/:id',
+        path: '/payment/:appointmentId',
         element: <Payment></Payment>
       },
+      {
+        path:'/payment-success',
+        element:<PaymentSuccess></PaymentSuccess>
+      }
     ],
   },
   {

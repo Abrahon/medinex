@@ -71,6 +71,7 @@ const MyAppointment = () => {
                 <div>
                   <p className='font-semibold text-lg'>{item.doctorName}</p>
                   <p className='text-sm text-gray-600'>{item.specialty}</p>
+                  <p className='text-sm text-gray-600'>${item.fees}</p>
                   <p className='text-sm mt-2 font-medium'>Date & Time:</p>
                   <p className='text-sm text-gray-700'>{item.appointmentTime}</p>
                   <p className='text-sm font-medium mt-1'>Status: <span className='text-blue-600'>{item.status}</span></p>
