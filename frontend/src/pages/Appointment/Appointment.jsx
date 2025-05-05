@@ -1,30 +1,28 @@
-import { assets } from '@/assets/assets/assets_frontend/assets';
-import RelatedDoctors from '@/Components/RelatedDoctors';
-import { AppContext } from '@/context/AppProvider';
-import { AuthContext } from '@/context/AuthProvider';
-import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import Swal from 'sweetalert2';
+import { assets } from "@/assets/assets/assets_frontend/assets";
+import RelatedDoctors from "@/Components/RelatedDoctors";
+import { AppContext } from "@/context/AppProvider";
+import { AuthContext } from "@/context/AuthProvider";
+import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router";
+import Swal from "sweetalert2";
 
 const Appointment = () => {
   const { _id } = useParams();
   const { doctors } = useContext(AppContext);
   const { user } = useContext(AuthContext);
 
-  const daysOfWeeks = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const daysOfWeeks = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const [docInfo, setDocInfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
-  const [slotTime, setSlotTime] = useState('');
+  const [slotTime, setSlotTime] = useState("");
 
   // Fetch doctor info based on _id
   const fetchDocInfo = async () => {
-    const docInfo = doctors.find(doc => doc._id === _id);
+    const docInfo = doctors.find((doc) => doc._id === _id);
     setDocInfo(docInfo);
   };
-  
-  
 
   // Generate available time slots for the next 7 days
   const getAvailableSlots = async () => {
@@ -41,7 +39,9 @@ const Appointment = () => {
       endTime.setHours(21, 0, 0, 0);
 
       if (today.getDate() === currentDate.getDate()) {
-        currentDate.setHours(currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10);
+        currentDate.setHours(
+          currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10
+        );
         currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
       } else {
         currentDate.setHours(10);
@@ -51,7 +51,10 @@ const Appointment = () => {
       let timeSlots = [];
 
       while (currentDate < endTime) {
-        let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        let formattedTime = currentDate.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
         timeSlots.push({
           dateTime: new Date(currentDate),
           time: formattedTime,
@@ -84,7 +87,7 @@ const Appointment = () => {
       });
       return;
     }
-  
+
     if (!slotTime) {
       Swal.fire({
         icon: "warning",
@@ -93,28 +96,30 @@ const Appointment = () => {
       });
       return;
     }
-  
-    const selectedSlot = docSlots[slotIndex][0].dateTime.toDateString() + ' ' + slotTime;
-  
+
+    const selectedSlot =
+      docSlots[slotIndex][0].dateTime.toDateString() + " " + slotTime;
+
     const booking = {
       userEmail: user.email,
-      img:docInfo.img,
+      img: docInfo.img,
       userName: user.displayName,
       doctorId: docInfo._id,
       doctorName: docInfo.name,
+      doctorEmail: docInfo.email,
       specialty: docInfo.specialty,
       appointmentTime: selectedSlot,
       fees: docInfo.fees,
-      status: 'pending'
+      status: "pending",
     };
-  
+
     try {
-      const res = await fetch('http://localhost:5000/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(booking)
+      const res = await fetch("http://localhost:5000/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(booking),
       });
-  
+
       const data = await res.json();
       if (data.insertedId) {
         Swal.fire("Success!", "Appointment booked successfully!", "success");
@@ -131,45 +136,51 @@ const Appointment = () => {
     docInfo && (
       <div>
         {/* Doctor Info Section */}
-        <div className='flex flex-col sm:flex-row gap-6 my-10'>
-          <div className='bg-naviblue rounded-lg'>
-            <img className='' src={docInfo.img} alt="" />
+        <div className="flex flex-col sm:flex-row gap-6 my-10">
+          <div className="bg-naviblue rounded-lg">
+            <img className="" src={docInfo.img} alt="" />
           </div>
-          <div className='border-2 p-4 rounded-lg w-full'>
-            <p className='flex text-3xl font-semibold'>
+          <div className="border-2 p-4 rounded-lg w-full">
+            <p className="flex text-3xl font-semibold">
               {docInfo.name}
               <img src={assets.verified_icon} alt="" />
             </p>
-            <p className='font-semibold text-lg'>
-              {docInfo.degree} - {docInfo.speciality ||docInfo.specialty}
-              <span className='ml-2 text-sm'>{docInfo.experience} years</span>
+            <p className="font-semibold text-lg">
+              {docInfo.degree} - {docInfo.speciality || docInfo.specialty}
+              <span className="ml-2 text-sm">{docInfo.experience} years</span>
             </p>
-            <p className='font-bold mt-4'>About</p>
+            <p>{docInfo.email}</p>
+            <p className="font-bold mt-4">About</p>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse a harum magnam architecto optio, neque excepturi cupiditate aperiam ullam autem asperiores ut. Dolores, nam eligendi incidunt recusandae tempora beatae veniam.
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse a
+              harum magnam architecto optio, neque excepturi cupiditate aperiam
+              ullam autem asperiores ut. Dolores, nam eligendi incidunt
+              recusandae tempora beatae veniam.
             </p>
-            <p className='font-bold mt-6'>
+            <p className="font-bold mt-6">
               Appointment fee: <span>${docInfo.fees}</span>
             </p>
           </div>
         </div>
 
         {/* Booking Slot Section */}
-        <div className='sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700'>
+        <div className="sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700">
           <p>Booking Slots</p>
 
           {/* Day Selector */}
-          <div className='flex gap-3 items-center w-full overflow-x-scroll mt-4'>
+          <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
             {docSlots.length > 0 &&
               docSlots.map((item, index) => (
                 <div
                   key={index}
                   className={`text-center py-6 min-w-16 cursor-pointer rounded-full border-2 ${
-                    slotIndex === index ? 'bg-naviblue text-white' : 'border-gray-200'
+                    slotIndex === index
+                      ? "bg-naviblue text-white"
+                      : "border-gray-200"
                   }`}
                   onClick={() => {
                     setSlotIndex(index);
-                    setSlotTime('');
+                    setSlotTime("");
                   }}
                 >
                   <p>{item[0] && daysOfWeeks[item[0].dateTime.getDay()]}</p>
@@ -179,13 +190,15 @@ const Appointment = () => {
           </div>
 
           {/* Time Slots for Selected Day */}
-          <div className='flex gap-3 flex-wrap my-10'>
+          <div className="flex gap-3 flex-wrap my-10">
             {docSlots.length > 0 &&
               docSlots[slotIndex]?.map((slot, i) => (
                 <div
                   key={i}
                   className={`text-center py-2 px-4 cursor-pointer rounded-full border-2 ${
-                    slotTime === slot.time ? 'bg-primary text-white' : 'border-gray-200'
+                    slotTime === slot.time
+                      ? "bg-primary text-white"
+                      : "border-gray-200"
                   }`}
                   onClick={() => setSlotTime(slot.time)}
                 >
@@ -194,7 +207,10 @@ const Appointment = () => {
               ))}
           </div>
 
-          <button onClick={handleAppointment } className='bg-naviblue px-12 py-4 text-white rounded-full my-6'>
+          <button
+            onClick={handleAppointment}
+            className="bg-naviblue px-12 py-4 text-white rounded-full my-6"
+          >
             Book An Appointment
           </button>
         </div>

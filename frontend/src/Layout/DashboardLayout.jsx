@@ -1,42 +1,116 @@
-import { Link, Outlet } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { Link, Outlet } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider";
+import {
+  FaHome,
+  FaUserPlus,
+  FaUsers,
+  FaUserMd,
+  FaCalendarAlt,
+  FaCalendarCheck,
+  FaUser,
+  FaStethoscope,
+} from "react-icons/fa";
 
 const DashboardLayout = () => {
-  const currentUser = { role: 'admin' }; // For demo, normally you'd get this from context
-  // const [admin, setAdmin] = useState(true);
+  const { role } = useContext(AuthContext);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
-      
       {/* Sidebar */}
       <div className="bg-blue-700 text-white w-full md:w-64 p-4 space-y-6">
-        <h2 className="text-2xl font-bold text-center md:text-left">Dashboard</h2>
+        <h2 className="text-2xl font-bold text-center md:text-left">
+          Dashboard
+        </h2>
 
         <ul className="space-y-2 text-center md:text-left">
           {/* Admin Menu */}
-          {currentUser?.role === 'admin' && (
+          {role === "admin" && (
             <>
-              <li><Link to="/dashboard/admin" className="block hover:underline">Admin Home</Link></li>
-              <li><Link to="/dashboard/admin/add-doctor" className="block hover:underline">Add Doctor</Link></li>
-              <li><Link to="/dashboard/admin/all-users" className="block hover:underline">All Users</Link></li>
-              <li><Link to="/dashboard/admin/manage-doctor" className="block hover:underline">Manage Doctors</Link></li>
+              <li>
+                <Link
+                  to="/dashboard/admin"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaHome /> Admin Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/admin/add-doctor"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaUserPlus /> Add Doctor
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/admin/all-users"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaUsers /> All Users
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/admin/manage-doctor"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaUserMd /> Manage Doctors
+                </Link>
+              </li>
             </>
           )}
-          
+
           {/* Doctor Menu */}
-          {currentUser?.role === 'doctor' && (
+          {role === "doctor" && (
             <>
-              <li><Link to="/dashboard/doctor" className="block hover:underline">Doctor Home</Link></li>
-              <li><Link to="/dashboard/doctor/my-patients" className="block hover:underline">My Patients</Link></li>
-              <li><Link to="/dashboard/doctor/set-schedule" className="block hover:underline">Set Schedule</Link></li>
+              <li>
+                <Link
+                  to="/dashboard/doctor"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaHome /> Doctor Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/doctor/my-patients"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaStethoscope /> My Patients
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/doctor/set-schedule"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaCalendarAlt /> Set Schedule
+                </Link>
+              </li>
             </>
           )}
-          
+
           {/* Patient/User Menu */}
-          {currentUser?.role === 'user' && (
+          {role === "user" && (
             <>
-              <li><Link to="/dashboard/user" className="block hover:underline">User Home</Link></li>
-              <li><Link to="/dashboard/user/my-appointments" className="block hover:underline">My Appointments</Link></li>
+              <li>
+                <Link
+                  to="/dashboard/user"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaUser /> User Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/user/my-appointments"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaCalendarCheck /> My Appointments
+                </Link>
+              </li>
             </>
           )}
         </ul>

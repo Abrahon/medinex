@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Checkout = () => {
-  const {id } = useParams(); // booking ID
+  const { id } = useParams(); // booking ID
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    age: '',
-    gender: '',
-    paymentMethod: 'Card',
+    fullName: "",
+    // email: "",
+    phone: "",
+    age: "",
+    gender: "",
+    paymentMethod: "Card",
   });
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const Checkout = () => {
         setBooking(data);
       })
       .catch((error) => {
-        console.error('Failed to fetch booking:', error);
+        console.error("Failed to fetch booking:", error);
       });
   }, [id]);
 
@@ -36,12 +36,12 @@ const Checkout = () => {
 
     const updatePayload = {
       ...formData,
-      status: 'Confirmed',
+      status: "Confirmed",
     };
 
     const res = await fetch(`http://localhost:5000/bookings/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatePayload),
     });
 
@@ -49,7 +49,7 @@ const Checkout = () => {
       Swal.fire("Success!", "Appointment Confirmed!!!", "success");
       navigate(`/payment/${id}`);
     } else {
-      alert('Something went wrong!');
+      alert("Something went wrong!");
     }
   };
 
@@ -65,7 +65,7 @@ const Checkout = () => {
             <input
               type="text"
               readOnly
-              value={booking?.doctorName || ''}
+              value={booking?.doctorName || ""}
               className="w-full rounded-full border p-2 bg-gray-100"
             />
           </div>
@@ -75,8 +75,18 @@ const Checkout = () => {
             <input
               type="text"
               readOnly
-              value={booking?.appointmentTime || ''}
+              value={booking?.appointmentTime || ""}
               className="w-full rounded-full border p-2 bg-gray-100"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Email</label>
+            <input
+              type="email"
+              readOnly
+              value={booking?.doctorEmail || ""}
+              className="w-full rounded-full border p-2"
             />
           </div>
 
@@ -93,13 +103,12 @@ const Checkout = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Email</label>
+            <label className="text-sm font-medium">Price</label>
             <input
-              name="email"
-              type="email"
-              
-              onChange={handleChange}
-              className="w-full rounded-full border p-2"
+              type="text"
+              readOnly
+              value={booking?.email || ""}
+              className="w-full rounded-full border p-2 bg-gray-100"
             />
           </div>
           <div>
@@ -107,7 +116,7 @@ const Checkout = () => {
             <input
               type="text"
               readOnly
-              value={booking?.fees || ''}
+              value={booking?.fees || ""}
               className="w-full rounded-full border p-2 bg-gray-100"
             />
           </div>
