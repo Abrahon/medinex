@@ -1,32 +1,24 @@
-import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '@/context/AuthProvider';
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "@/context/AuthProvider";
 
 const MyPatients = () => {
   const { user } = useContext(AuthContext);
   const [patients, setPatients] = useState([]);
 
   useEffect(() => {
-    if (!user?.email) return;
-
-    const fetchPatients = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/bookings/doctors?email=${user.email}`);
-        const data = await res.json();
-
-        if (Array.isArray(data)) {
+    const doctorEmail = user?.email;
+    if (doctorEmail) {
+      fetch(`http://localhost:5000/bookings?doctorEmail=${doctorEmail}`)
+        .then((res) => res.json())
+        .then((data) => {
           setPatients(data);
-        } else {
-          console.warn('Expected array but got:', data);
-          setPatients([]); // fallback
-        }
-      } catch (error) {
-        console.error('Failed to load patients', error);
-        setPatients([]);
-      }
-    };
-
-    fetchPatients();
-  }, [user?.email]);
+        })
+        .catch((error) => {
+          console.error("Error fetching bookings:", error);
+          setPatients([]);
+        });
+    }
+  }, [user]);
 
   return (
     <div className="p-4">
@@ -36,29 +28,35 @@ const MyPatients = () => {
           <thead>
             <tr className="bg-gray-100 text-left">
               <th className="py-2 px-4 border">SL</th>
-              <th className="py-2 px-4 border">Patient Name</th>
+              <th className="py-2 px-4 border">Name</th>
               <th className="py-2 px-4 border">Email</th>
-              <th className="py-2 px-4 border">Date & Time</th>
-              <th className="py-2 px-4 border">Slot</th>
-              <th className="py-2 px-4 border">Specialty</th>
+              <th className="py-2 px-4 border">Phone</th>
+              <th className="py-2 px-4 border">Gender</th>
+              <th className="py-2 px-4 border">Time</th>
+              <th className="py-2 px-4 border">Status</th>
             </tr>
           </thead>
           <tbody>
             {patients.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
+                <td colSpan="7" className="text-center py-4 text-gray-500">
                   No patients found.
                 </td>
               </tr>
             ) : (
               patients.map((patient, i) => (
-                <tr key={patient._id || i} className="hover:bg-gray-50">
+                <tr key={patient._id}>
                   <td className="py-2 px-4 border">{i + 1}</td>
-                  <td className="py-2 px-4 border">{patient.fullName}</td>
-                  <td className="py-2 px-4 border">{patient.email}</td>
-                  <td className="py-2 px-4 border">{patient.appointmentTime}</td>
-                  <td className="py-2 px-4 border">{patient.slot || 'N/A'}</td>
-                  <td className="py-2 px-4 border">{patient.specialty || 'N/A'}</td>
+                  <td className="py-2 px-4 border">{patient.userName}</td>
+                  <td className="py-2 px-4 border">{patient.userEmail}</td>
+                  <td className="py-2 px-4 border">{patient.phone || "N/A"}</td>
+                  <td className="py-2 px-4 border">
+                    {patient.gender || "N/A"}
+                  </td>
+                  <td className="py-2 px-4 border">
+                    {patient.appointmentTime}
+                  </td>
+                  <td className="py-2 px-4 border">{patient.status}</td>
                 </tr>
               ))
             )}

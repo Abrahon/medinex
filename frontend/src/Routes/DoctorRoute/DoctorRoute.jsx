@@ -1,11 +1,10 @@
 import { AuthContext } from "@/context/AuthProvider";
 import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-// import { AuthContext } from "@/providers/AuthProvider";
 
-const AdminRoute = ({ children }) => {
+const DoctorRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isDoctor, setIsDoctor] = useState(false);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -13,11 +12,11 @@ const AdminRoute = ({ children }) => {
       fetch(`http://localhost:5000/users/role?email=${user.email}`)
         .then((res) => res.json())
         .then((data) => {
-          setIsAdmin(data.role === "admin");
+          setIsDoctor(data.role === "doctor");
           setChecking(false);
         })
         .catch(() => {
-          setIsAdmin(false);
+          setIsDoctor(false);
           setChecking(false);
         });
     } else {
@@ -27,7 +26,7 @@ const AdminRoute = ({ children }) => {
 
   if (loading || checking) return <p>Loading...</p>;
 
-  return isAdmin ? children : <Navigate to="/" />;
+  return isDoctor ? children : <Navigate to="/" />;
 };
 
-export default AdminRoute;
+export default DoctorRoute;
