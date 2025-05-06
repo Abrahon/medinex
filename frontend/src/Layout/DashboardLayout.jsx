@@ -10,6 +10,8 @@ import {
   FaCalendarCheck,
   FaUser,
   FaStethoscope,
+  FaIdBadge,
+  FaMoneyCheckAlt,
 } from "react-icons/fa";
 
 const DashboardLayout = () => {
@@ -20,7 +22,7 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <div className="bg-blue-700 text-white w-full md:w-64 p-4 space-y-6">
         <h2 className="text-2xl font-bold text-center md:text-left">
-          <Link t="/">Dashboard</Link>
+          <Link to="/">Dashboard</Link>
         </h2>
 
         <ul className="space-y-2 text-center md:text-left">
@@ -92,7 +94,7 @@ const DashboardLayout = () => {
             </>
           )}
 
-          {/* Patient/User Menu */}
+          {/* User Menu */}
           {role === "user" && (
             <>
               <li>
@@ -100,7 +102,15 @@ const DashboardLayout = () => {
                   to="/dashboard/user"
                   className="flex items-center gap-2 hover:underline"
                 >
-                  <FaUser /> User Home
+                  <FaHome /> User Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/user/profile"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaIdBadge /> Profile
                 </Link>
               </li>
               <li>
@@ -109,6 +119,14 @@ const DashboardLayout = () => {
                   className="flex items-center gap-2 hover:underline"
                 >
                   <FaCalendarCheck /> My Appointments
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/user/payment-history"
+                  className="flex items-center gap-2 hover:underline"
+                >
+                  <FaMoneyCheckAlt /> Payment History
                 </Link>
               </li>
             </>

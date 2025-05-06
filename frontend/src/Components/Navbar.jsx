@@ -6,8 +6,9 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [menuShow, setMenuShow] = useState(false);
-  // const [role, setRole] = useState(null);
-  const { user, role, logOut } = useContext(AuthContext);
+  // const \[role, setRole] = useState(null);
+  const { user, role, logOut, loading } = useContext(AuthContext);
+  console.log("user", role);
   const navigate = useNavigate();
 
   const handleLogOut = () => {
@@ -27,10 +28,10 @@ const Navbar = () => {
 
   return (
     <div className="flex justify-between items-center border-b-2 py-4 px-5 md:px-10">
+      {" "}
       <Link className="text-3xl font-bold italic" to="/">
-        MEDINEX
+        MEDINEX{" "}
       </Link>
-
       {/* Desktop Menu */}
       <ul className="hidden md:flex uppercase items-center space-x-8">
         <NavLink to="/" className={navLinkStyles}>
@@ -59,54 +60,38 @@ const Navbar = () => {
             <li>Doctor Dashboard</li>
           </NavLink>
         )}
+        {role === "user" && (
+          <NavLink to="/dashboard/user" className={navLinkStyles}>
+            <li>Dashboard</li>
+          </NavLink>
+        )}
       </ul>
-
       {/* Profile or Login Button */}
       <div className="flex items-center gap-4">
         {user ? (
-          <div className="relative group cursor-pointer">
+          <div className="flex items-center gap-4">
+            {/* Logout button first */}
+            <button
+              onClick={handleLogOut}
+              className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-sm"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+
+            {/* Profile image and name */}
             <div className="flex items-center gap-2">
               <img
-                className="w-12 h-12 rounded-full"
+                className="w-10 h-10 rounded-full border border-gray-300"
                 src={
                   user?.photoURL ||
                   "https://i.ibb.co/6BRR4mX/default-avatar.png"
                 }
                 alt="Profile"
               />
-              <p className="text-xs">
+              <p className="text-sm font-medium">
                 {user?.displayName || user?.name || "User"}
               </p>
-            </div>
-
-            {/* Dropdown */}
-            <div className="absolute right-0 pt-4 hidden group-hover:block">
-              <div className="bg-gray-200 rounded-md p-2 space-y-2 w-40 text-center">
-                <p
-                  className="hover:text-blue-500"
-                  onClick={() => navigate("/my-profile")}
-                >
-                  My Profile
-                </p>
-                <p
-                  className="hover:text-blue-500"
-                  onClick={() => navigate("/my-appointment")}
-                >
-                  My Appointments
-                </p>
-                <p
-                  className="hover:text-blue-500"
-                  onClick={() => navigate("/dashboard/payment-history")}
-                >
-                  PaymentHistory
-                </p>
-                <button
-                  onClick={handleLogOut}
-                  className="hover:text-blue-500 flex items-center justify-center gap-2 w-full"
-                >
-                  <LogOut size={18} /> Logout
-                </button>
-              </div>
             </div>
           </div>
         ) : (
@@ -117,7 +102,6 @@ const Navbar = () => {
             Create Account
           </button>
         )}
-
         {/* Mobile menu button */}
         <img
           onClick={() => setMenuShow(true)}
@@ -126,14 +110,13 @@ const Navbar = () => {
           alt="Menu"
         />
       </div>
-
       {/* Mobile Menu */}
       <div
         className={`fixed top-0 right-0 w-full h-full bg-white z-50 transform ${
           menuShow ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 md:hidden`}
       >
-        <div className="flex items-center justify-between p-6">
+        <div className="flex items-center justify-between p-2">
           {/* <img className="w-36" src={assets.logo} alt="Logo" /> */}
           <h3 className="text-xl font-bold uppercase italic">medinex</h3>
           <img
@@ -144,7 +127,7 @@ const Navbar = () => {
           />
         </div>
 
-        <ul className="flex flex-col items-center mt-10 space-y-6 text-lg font-semibold">
+        <ul className="flex flex-col items-center mt-2 space-y-2 font-semibold ">
           <li>
             <NavLink
               onClick={() => setMenuShow(false)}
@@ -198,7 +181,7 @@ const Navbar = () => {
                 to="/dashboard/admin"
                 className={navLinkStyles}
               >
-                Dashboard
+                Admin Dashboard
               </NavLink>
             </li>
           )}
@@ -207,6 +190,17 @@ const Navbar = () => {
               <NavLink
                 onClick={() => setMenuShow(false)}
                 to="/dashboard/doctor"
+                className={navLinkStyles}
+              >
+                Doctor Dashboard
+              </NavLink>
+            </li>
+          )}
+          {role === "user" && (
+            <li>
+              <NavLink
+                onClick={() => setMenuShow(false)}
+                to="/dashboard/user"
                 className={navLinkStyles}
               >
                 Dashboard

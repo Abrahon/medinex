@@ -1,38 +1,45 @@
-import SpecialityMenu from '@/Components/SpecialityMenu'
-import TopDoctors from '@/Components/TopDoctors'
-import { AppContext } from '@/context/AppProvider'
-import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
-import { Link } from 'react-router-dom'
+import SpecialityMenu from "@/Components/SpecialityMenu";
+import TopDoctors from "@/Components/TopDoctors";
+import { AppContext } from "@/context/AppProvider";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 const Doctors = () => {
-  const { speciality } = useParams()
-  console.log(speciality)
-  const { doctors } = useContext(AppContext)
-  console.log(doctors)
-  const [filterDoc, setFilterDoc] = useState([])
-  const [showFilter, setShowFilter] = useState(false)
-  const navigate = useNavigate()
+  const { speciality } = useParams();
+  console.log(speciality);
+  const { doctors } = useContext(AppContext);
+  console.log(doctors);
+  const [filterDoc, setFilterDoc] = useState([]);
+  const [showFilter, setShowFilter] = useState(false);
+  const navigate = useNavigate();
 
   const applyfilter = () => {
     if (speciality) {
-      setFilterDoc(doctors?.filter(doc => doc.speciality === speciality))
+      setFilterDoc(doctors?.filter((doc) => doc.speciality === speciality));
     } else {
-      setFilterDoc(doctors)
+      setFilterDoc(doctors);
     }
-  }
+  };
 
   useEffect(() => {
-    applyfilter()
-  }, [doctors, speciality])
+    applyfilter();
+  }, [doctors, speciality]);
 
   return (
-    <div className='my-16'>
+    <div className="my-16">
       <p>Browse through the doctors specialist.</p>
       <div className="flex flex-col  sm:flex-row items-start mt-4 gap-3">
-        <button className={`py-1 px-3 text-sm border-rounded sm:hidden ${showFilter? 'bg-naviblue text-white': ''}`} onClick={()=>setShowFilter(prev=>!prev)}>Filter</button>
-        
-        <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+        <button
+          className={`py-1 px-3 text-sm border-rounded sm:hidden ${
+            showFilter ? "bg-naviblue text-white" : ""
+          }`}
+          onClick={() => setShowFilter((prev) => !prev)}
+        >
+          Filter
+        </button>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filterDoc?.map((item, index) => (
             <div
               key={item._id} // Ensure each item has a unique key
@@ -55,7 +62,7 @@ const Doctors = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Doctors
+export default Doctors;

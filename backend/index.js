@@ -37,11 +37,28 @@ async function run() {
     // Role-based Access
     app.get("/users/role", async (req, res) => {
       const email = req.query.email;
-      const user = await userCollection.findOne({ email });
-      if (user) {
-        res.send({ role: user.role });
-      } else {
-        res.status(404).send({ message: "User not found" });
+
+      // Validate input
+      if (!email) {
+        return res
+          .status(400)
+          .send({ message: "Email is required", role: null });
+      }
+
+      try {
+        const user = await userCollection.findOne({ email });
+
+        if (user && user.role) {
+          res.send({ role: user.role });
+        } else {
+          res
+            .status(404)
+            .send({ message: "User not found or role missing", role: null });
+        }
+      } catch (error) {
+        res
+          .status(500)
+          .send({ message: "Server error", error: error.message, role: null });
       }
     });
 
@@ -79,6 +96,14 @@ async function run() {
       const result = await userCollection.updateOne(
         { _id: new ObjectId(id) },
         { $set: { role: "doctor" } }
+      );
+      res.send(result);
+    });
+    app.patch("/users/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await userCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { role: "user" } }
       );
       res.send(result);
     });

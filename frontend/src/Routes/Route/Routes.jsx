@@ -3,13 +3,13 @@ import Main from "@/Layout/Main";
 import About from "@/pages/About/About";
 import Appointment from "@/pages/Appointment/Appointment";
 import Login from "@/pages/Authentication/Login";
-import Blog from "@/pages/Home/Blog";
+import Blog from "@/pages/Home/Blog/Blog";
 import Contact from "@/pages/Contact/Contact";
 import AddDoctor from "@/pages/Dashboard/Admin/AddDoctor/AddDoctors";
 import Doctors from "@/pages/Doctors/Doctors";
 import Home from "@/pages/Home/Home";
 import MyAppointment from "@/pages/Dashboard/User/MyAppointment/MyAppointment";
-import MyProfile from "@/pages/MyProfile";
+import MyProfile from "@/pages/Dashboard/User/Profile/MyProfile";
 import AdminHome from "@/pages/Dashboard/Admin/AdminHome/AdminHome";
 import AllUser from "@/pages/Dashboard/Admin/AllUser/AllUser";
 import DoctorHome from "@/pages/Dashboard/Doctor/DoctorHome/DoctorHome";
@@ -29,6 +29,8 @@ import DoctorRoute from "../DoctorRoute/DoctorRoute"; // ✅ Missing import fixe
 
 import { createBrowserRouter } from "react-router-dom";
 import PaymentHistory from "@/pages/Dashboard/User/PaymentHistory/PaymentHistory";
+import BlogDetails from "@/pages/Home/Blog/BlogDetails";
+import UserHome from "@/pages/Dashboard/User/UserHome/UserHome";
 
 // Create the router instance
 export const router = createBrowserRouter([
@@ -42,8 +44,8 @@ export const router = createBrowserRouter([
       { path: "/doctors", element: <Doctors /> },
       { path: "/doctors/:specialty?", element: <Doctors /> },
       { path: "/blog", element: <Blog /> },
-      { path: "/my-profile", element: <MyProfile /> },
-      { path: "/my-appointment", element: <MyAppointment /> },
+      { path: "/blog-details/:id", element: <BlogDetails></BlogDetails> },
+      // { path: "/my-appointment", element: <MyAppointment /> },
       { path: "/appointment/:_id", element: <Appointment /> },
       { path: "/login", element: <Login /> },
       { path: "/sign-up", element: <Signup /> },
@@ -89,8 +91,17 @@ export const router = createBrowserRouter([
       },
       { path: "doctor/my-patients", element: <MyPatients /> },
       { path: "doctor/set-schedule", element: <SetSchedule /> },
-      { path: "user", element: <MyAppointment /> },
-      { path: "payment-history", element: <PaymentHistory></PaymentHistory> },
+
+      { path: "user", element: <UserHome></UserHome> },
+      { path: "user/profile", element: <MyProfile /> },
+      {
+        path: "user/payment-history",
+        element: <PaymentHistory></PaymentHistory>,
+      },
+      {
+        path: "user/my-appointments",
+        element: <MyAppointment></MyAppointment>,
+      },
     ],
   },
 ]);

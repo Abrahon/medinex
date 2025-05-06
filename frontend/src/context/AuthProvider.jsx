@@ -19,27 +19,27 @@ const auth = getAuth(app);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoadaing] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
   const googleProvide = new GoogleAuthProvider();
 
   // create user
   const createUser = (email, password) => {
-    setLoadaing(true);
+    setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
   // fro existing user
   const signIn = (email, password) => {
-    setLoadaing(true);
+    setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
   const signInGoogle = () => {
-    setLoadaing(true);
+    setLoading(true);
     return signInWithPopup(auth, googleProvide);
   };
   const logOut = () => {
-    setLoadaing(true);
+    setLoading(true);
     setRole(null);
     return signOut(auth);
   };
@@ -54,7 +54,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoadaing(false);
+      setLoading(false);
 
       if (currentUser?.email) {
         axios
