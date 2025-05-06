@@ -20,7 +20,7 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <div className="bg-blue-700 text-white w-full md:w-64 p-4 space-y-6">
         <h2 className="text-2xl font-bold text-center md:text-left">
-          Dashboard
+          <Link t="/">Dashboard</Link>
         </h2>
 
         <ul className="space-y-2 text-center md:text-left">

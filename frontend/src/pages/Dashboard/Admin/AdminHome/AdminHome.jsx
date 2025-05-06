@@ -22,6 +22,7 @@ const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1"];
 const AdminHome = () => {
   const [alluser, setAlluser] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [appointmenstData, setAppointsmentData] = useState([]);
   const { doctors } = useContext(AppContext);
   const { user } = useContext(AuthContext);
 
@@ -104,7 +105,7 @@ const AdminHome = () => {
         }));
 
         setAppointments(data);
-        setAppointmentData(formattedData); // <-- New state you should define
+        setAppointsmentData(formattedData); // <-- New state you should define
       })
       .catch((err) => console.error("Failed to fetch bookings", err));
   }, []);

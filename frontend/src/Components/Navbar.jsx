@@ -134,7 +134,8 @@ const Navbar = () => {
         } transition-transform duration-300 md:hidden`}
       >
         <div className="flex items-center justify-between p-6">
-          <img className="w-36" src={assets.logo} alt="Logo" />
+          {/* <img className="w-36" src={assets.logo} alt="Logo" /> */}
+          <h3 className="text-xl font-bold uppercase italic">medinex</h3>
           <img
             onClick={() => setMenuShow(false)}
             className="w-7 cursor-pointer"
@@ -143,7 +144,7 @@ const Navbar = () => {
           />
         </div>
 
-        <ul className="flex flex-col items-center mt-10 space-y-6 text-xl font-semibold">
+        <ul className="flex flex-col items-center mt-10 space-y-6 text-lg font-semibold">
           <li>
             <NavLink
               onClick={() => setMenuShow(false)}

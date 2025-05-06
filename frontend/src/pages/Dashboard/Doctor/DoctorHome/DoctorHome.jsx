@@ -6,21 +6,37 @@ import {
   FaClipboardList,
   FaStar,
 } from "react-icons/fa";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+
+const COLORS = ["#FBBF24", "#4ADE80", "#F87171"]; // yellow, green, red
 
 const DoctorHome = () => {
   const [appointments, setAppointments] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const { user } = useContext(AuthContext);
 
-  // Fetch Appointments
   useEffect(() => {
     const doctorEmail = user?.email;
     if (doctorEmail) {
       fetch(`http://localhost:5000/bookings?doctorEmail=${doctorEmail}`)
         .then((res) => res.json())
-        .then((data) => setAppointments(data))
+        .then((data) => {
+          // Normalize status to lowercase to avoid case mismatch
+          const normalizedData = data.map((item) => ({
+            ...item,
+            status: item.status?.toLowerCase() || "pending",
+          }));
+          setAppointments(normalizedData);
+        })
         .catch((error) => {
-          console.error("Error fetching schedule:", error);
+          console.error("Error fetching appointments:", error);
           setAppointments([]);
         });
     }
@@ -28,23 +44,33 @@ const DoctorHome = () => {
 
   useEffect(() => {
     const doctorEmail = user?.email;
-    console.log(doctorEmail);
     if (doctorEmail) {
       fetch(`http://localhost:5000/schedules?doctorEmail=${doctorEmail}`)
         .then((res) => res.json())
-        .then((data) => {
-          setSchedule(data);
-        })
+        .then((data) => setSchedule(data))
         .catch((error) => {
-          console.error("Error fetching bookings:", error);
-          setSchedule([]); // ⚠️ Probably a typo; should be setSchedule([])
+          console.error("Error fetching schedule:", error);
+          setSchedule([]);
         });
     }
   }, [user]);
 
-  const pendingAppointments = appointments.filter(
+  // Count statuses
+  const pendingCount = appointments.filter(
     (appt) => appt.status === "pending"
-  );
+  ).length;
+  const approvedCount = appointments.filter(
+    (appt) => appt.status === "confirmed"
+  ).length;
+  const rejectedCount = appointments.filter(
+    (appt) => appt.status === "rejected"
+  ).length;
+
+  const chartData = [
+    { name: "Pending", value: pendingCount },
+    { name: "Confirmed", value: approvedCount },
+    { name: "Rejected", value: rejectedCount },
+  ];
 
   return (
     <div className="p-6">
@@ -63,7 +89,7 @@ const DoctorHome = () => {
         <StatCard
           icon={<FaCalendarCheck />}
           title="Pending Appointments"
-          value={pendingAppointments.length}
+          value={pendingCount}
           color="text-yellow-500"
         />
         <StatCard
@@ -87,6 +113,36 @@ const DoctorHome = () => {
           <li>Update your schedule for the upcoming week.</li>
           <li>Respond to new feedback or queries.</li>
         </ul>
+      </div>
+
+      <div className="mt-10">
+        <h3 className="text-xl font-semibold mb-4">📊 Appointment Status</h3>
+        <div className="w-full h-72 bg-white p-4 rounded-xl shadow">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                label
+                animationDuration={800}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

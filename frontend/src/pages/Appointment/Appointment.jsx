@@ -11,62 +11,28 @@ const Appointment = () => {
   const { doctors } = useContext(AppContext);
   const { user } = useContext(AuthContext);
 
-  const daysOfWeeks = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-
   const [docInfo, setDocInfo] = useState(null);
-  const [docSlots, setDocSlots] = useState([]);
-  const [slotIndex, setSlotIndex] = useState(0);
+  const [availableSchedule, setAvailableSchedule] = useState([]);
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
+  console.log("slot", availableSchedule);
 
-  // Fetch doctor info based on _id
   const fetchDocInfo = async () => {
-    const docInfo = doctors.find((doc) => doc._id === _id);
-    setDocInfo(docInfo);
+    const doc = doctors.find((d) => d._id === _id);
+    if (doc) setDocInfo(doc);
   };
 
-  // Generate available time slots for the next 7 days
-  const getAvailableSlots = async () => {
-    setDocSlots([]);
-    let today = new Date();
-    const slots = [];
-
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date(today);
-      currentDate.setDate(today.getDate() + i);
-
-      let endTime = new Date();
-      endTime.setDate(today.getDate() + i);
-      endTime.setHours(21, 0, 0, 0);
-
-      if (today.getDate() === currentDate.getDate()) {
-        currentDate.setHours(
-          currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10
-        );
-        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
-      } else {
-        currentDate.setHours(10);
-        currentDate.setMinutes(0);
-      }
-
-      let timeSlots = [];
-
-      while (currentDate < endTime) {
-        let formattedTime = currentDate.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        timeSlots.push({
-          dateTime: new Date(currentDate),
-          time: formattedTime,
-        });
-
-        currentDate.setMinutes(currentDate.getMinutes() + 30);
-      }
-
-      slots.push(timeSlots);
+  const fetchSchedule = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/schedules?doctorEmail=${docInfo.email}`
+      );
+      const data = await res.json();
+      setAvailableSchedule(data);
+      console.log("doctor slot", data);
+    } catch (err) {
+      console.error("Error fetching schedule:", err);
     }
-
-    setDocSlots(slots);
   };
 
   useEffect(() => {
@@ -74,10 +40,11 @@ const Appointment = () => {
   }, [doctors, _id]);
 
   useEffect(() => {
-    if (docInfo) {
-      getAvailableSlots();
+    if (docInfo?.email) {
+      fetchSchedule();
     }
-  }, [docInfo]);
+  }, [docInfo?.email]);
+
   const handleAppointment = async () => {
     if (!user) {
       Swal.fire({
@@ -97,8 +64,7 @@ const Appointment = () => {
       return;
     }
 
-    const selectedSlot =
-      docSlots[slotIndex][0].dateTime.toDateString() + " " + slotTime;
+    const selectedDay = availableSchedule[selectedDayIndex]?.day;
 
     const booking = {
       userEmail: user.email,
@@ -108,7 +74,7 @@ const Appointment = () => {
       doctorName: docInfo.name,
       doctorEmail: docInfo.email,
       specialty: docInfo.specialty,
-      appointmentTime: selectedSlot,
+      appointmentTime: `${selectedDay} ${slotTime}`,
       fees: docInfo.fees,
       status: "pending",
     };
@@ -146,17 +112,12 @@ const Appointment = () => {
               <img src={assets.verified_icon} alt="" />
             </p>
             <p className="font-semibold text-lg">
-              {docInfo.degree} - {docInfo.speciality || docInfo.specialty}
+              {docInfo.degree} - {docInfo.specialty}
               <span className="ml-2 text-sm">{docInfo.experience} years</span>
             </p>
             <p>{docInfo.email}</p>
             <p className="font-bold mt-4">About</p>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse a
-              harum magnam architecto optio, neque excepturi cupiditate aperiam
-              ullam autem asperiores ut. Dolores, nam eligendi incidunt
-              recusandae tempora beatae veniam.
-            </p>
+            <p>{docInfo.about}</p>
             <p className="font-bold mt-6">
               Appointment fee: <span>${docInfo.fees}</span>
             </p>
@@ -169,42 +130,40 @@ const Appointment = () => {
 
           {/* Day Selector */}
           <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
-            {docSlots.length > 0 &&
-              docSlots.map((item, index) => (
+            {availableSchedule.length > 0 &&
+              availableSchedule.map((item, index) => (
                 <div
                   key={index}
-                  className={`text-center py-6 min-w-16 cursor-pointer rounded-full border-2 ${
-                    slotIndex === index
+                  className={`text-center px-1 py-6 min-w-24 cursor-pointer rounded-full border-2 ${
+                    selectedDayIndex === index
                       ? "bg-naviblue text-white"
                       : "border-gray-200"
                   }`}
                   onClick={() => {
-                    setSlotIndex(index);
+                    setSelectedDayIndex(index);
                     setSlotTime("");
                   }}
                 >
-                  <p>{item[0] && daysOfWeeks[item[0].dateTime.getDay()]}</p>
-                  <p>{item[0] && item[0].dateTime.getDate()}</p>
+                  <p>{item.day}</p>
                 </div>
               ))}
           </div>
 
-          {/* Time Slots for Selected Day */}
+          {/* Time Slots */}
           <div className="flex gap-3 flex-wrap my-10">
-            {docSlots.length > 0 &&
-              docSlots[slotIndex]?.map((slot, i) => (
-                <div
-                  key={i}
-                  className={`text-center py-2 px-4 cursor-pointer rounded-full border-2 ${
-                    slotTime === slot.time
-                      ? "bg-primary text-white"
-                      : "border-gray-200"
-                  }`}
-                  onClick={() => setSlotTime(slot.time)}
-                >
-                  <p>{slot.time.toLowerCase()}</p>
-                </div>
-              ))}
+            {availableSchedule[selectedDayIndex]?.slots?.map((slot, i) => (
+              <div
+                key={i}
+                className={`text-center py-2 px-4 cursor-pointer rounded-full border-2 ${
+                  slotTime === slot
+                    ? "bg-primary text-white"
+                    : "border-gray-200"
+                }`}
+                onClick={() => setSlotTime(slot)}
+              >
+                <p>{slot.toLowerCase()}</p>
+              </div>
+            ))}
           </div>
 
           <button

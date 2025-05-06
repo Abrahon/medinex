@@ -4,11 +4,11 @@ import Swal from "sweetalert2";
 
 const Checkout = () => {
   const { id } = useParams(); // booking ID
+  // console.log("payment id", id);
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
-    // email: "",
     phone: "",
     age: "",
     gender: "",
@@ -36,7 +36,7 @@ const Checkout = () => {
 
     const updatePayload = {
       ...formData,
-      status: "Confirmed",
+      status: "pending",
     };
 
     const res = await fetch(`http://localhost:5000/bookings/${id}`, {
@@ -102,15 +102,6 @@ const Checkout = () => {
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium">Price</label>
-            <input
-              type="text"
-              readOnly
-              value={booking?.email || ""}
-              className="w-full rounded-full border p-2 bg-gray-100"
-            />
-          </div>
           <div>
             <label className="text-sm font-medium">Price</label>
             <input

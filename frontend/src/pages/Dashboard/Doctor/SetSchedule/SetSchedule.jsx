@@ -1,5 +1,7 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider";
+import { motion, AnimatePresence } from "framer-motion";
+import Swal from "sweetalert2";
 
 const SetSchedule = () => {
   const { user } = useContext(AuthContext);
@@ -7,7 +9,15 @@ const SetSchedule = () => {
   const [day, setDay] = useState("");
   const [slots, setSlots] = useState([]);
 
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+  ];
+
   const allSlots = [
     "10:00 AM",
     "11:00 AM",
@@ -17,13 +27,31 @@ const SetSchedule = () => {
     "5:00 PM",
   ];
 
-  const handleAdd = () => {
-    if (!day || slots.length === 0) return;
+  const toggleSlot = (slot) => {
+    setSlots((prevSlots) =>
+      prevSlots.includes(slot)
+        ? prevSlots.filter((s) => s !== slot)
+        : [...prevSlots, slot]
+    );
+  };
 
-    // Check if day already exists in schedule
+  const handleAdd = () => {
+    if (!day || slots.length === 0) {
+      Swal.fire(
+        "Warning",
+        "Please select a day and at least one slot.",
+        "warning"
+      );
+      return;
+    }
+
     const exists = schedule.find((item) => item.day === day);
     if (exists) {
-      alert("This day is already added. Please choose another.");
+      Swal.fire(
+        "Warning",
+        "This day is already added. Choose another.",
+        "warning"
+      );
       return;
     }
 
@@ -33,50 +61,56 @@ const SetSchedule = () => {
   };
 
   const handleSubmit = async () => {
-    for (const item of schedule) {
-      const res = await fetch("http://localhost:5000/schedules", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          doctorEmail: user.email,
-          day: item.day,
-          slots: item.slots,
-        }),
-      });
+    if (!user?.email) {
+      Swal.fire("Error", "User not authenticated", "error");
+      return;
+    }
 
-      const result = await res.json();
-      console.log(result);
+    try {
+      for (const item of schedule) {
+        const res = await fetch("http://localhost:5000/schedules", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            doctorEmail: user.email,
+            day: item.day,
+            slots: item.slots,
+          }),
+        });
 
-      if (!result.success) {
-        alert(`Failed to save schedule for ${item.day}`);
-        return;
+        if (!res.ok) {
+          throw new Error(`Failed to save schedule for ${item.day}`);
+        }
       }
-    }
 
-    alert("All schedules saved successfully!");
-    setSchedule([]); // Optional: clear after saving
-  };
-
-  const toggleSlot = (slot) => {
-    if (slots.includes(slot)) {
-      setSlots(slots.filter((s) => s !== slot));
-    } else {
-      setSlots([...slots, slot]);
+      Swal.fire("Success!", "Schedule has been added.", "success");
+      setSchedule([]);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", err.message || "Something went wrong!", "error");
     }
   };
-  // console.log("slot", toggleSlot);
+
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Set Available Schedule</h2>
+    <motion.div
+      className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-3xl font-bold mb-6 text-center text-naviblue">
+        Set Schedule
+      </h2>
 
+      {/* Day Selector */}
       <div className="mb-4">
-        <label className="block font-semibold mb-1">Day</label>
+        <label className="block font-semibold mb-1">Select Day</label>
         <select
           value={day}
           onChange={(e) => setDay(e.target.value)}
-          className="border w-full p-2"
+          className="border w-full p-2 rounded"
         >
-          <option value="">Select a day</option>
+          <option value="">Choose day</option>
           {days.map((d) => (
             <option key={d} value={d}>
               {d}
@@ -85,48 +119,73 @@ const SetSchedule = () => {
         </select>
       </div>
 
+      {/* Time Slots */}
       <div className="mb-4">
-        <label className="block font-semibold mb-1">Select Time Slots</label>
+        <label className="block font-semibold mb-1">Time Slots</label>
         <div className="flex flex-wrap gap-2">
           {allSlots.map((slot) => (
-            <button
+            <motion.button
               key={slot}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => toggleSlot(slot)}
-              className={`px-3 py-1 border rounded ${
-                slots.includes(slot) ? "bg-blue-500 text-white" : ""
+              className={`px-3 py-1 rounded-full border transition ${
+                slots.includes(slot)
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white border-gray-300"
               }`}
             >
               {slot}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
 
-      <button
+      {/* Add Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={handleAdd}
-        className="bg-green-500 text-white px-4 py-2 rounded"
+        className="bg-green-500 text-white px-4 py-2 rounded w-full mt-4 transition"
       >
         Add Day
-      </button>
+      </motion.button>
 
+      {/* Schedule Preview */}
       <div className="mt-6">
-        <h3 className="font-semibold mb-2">Preview</h3>
-        <ul className="list-disc ml-6">
-          {schedule.map((item, i) => (
-            <li key={i}>
-              {item.day}: {item.slots.join(", ")}
-            </li>
-          ))}
+        <h3 className="text-lg font-semibold mb-2">Schedule Preview</h3>
+        <ul className="space-y-2">
+          <AnimatePresence>
+            {schedule.map((item, i) => (
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="bg-gray-100 p-2 rounded shadow-sm"
+              >
+                <strong>{item.day}</strong>: {item.slots.join(", ")}
+              </motion.li>
+            ))}
+          </AnimatePresence>
         </ul>
       </div>
 
-      <button
+      {/* Submit Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={handleSubmit}
-        className="bg-blue-600 text-white mt-4 px-4 py-2 rounded"
+        disabled={schedule.length === 0}
+        className={`mt-6 w-full py-3 rounded ${
+          schedule.length === 0
+            ? "bg-gray-400 cursor-not-allowed text-white"
+            : "bg-blue-700 text-white"
+        }`}
       >
         Submit Schedule
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 

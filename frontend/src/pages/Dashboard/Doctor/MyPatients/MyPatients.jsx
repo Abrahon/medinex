@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/AuthProvider";
+import { FaTrash } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const MyPatients = () => {
   const { user } = useContext(AuthContext);
@@ -10,9 +12,7 @@ const MyPatients = () => {
     if (doctorEmail) {
       fetch(`http://localhost:5000/bookings?doctorEmail=${doctorEmail}`)
         .then((res) => res.json())
-        .then((data) => {
-          setPatients(data);
-        })
+        .then((data) => setPatients(data))
         .catch((error) => {
           console.error("Error fetching bookings:", error);
           setPatients([]);
@@ -20,43 +20,86 @@ const MyPatients = () => {
     }
   }, [user]);
 
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to remove this patient booking?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`http://localhost:5000/bookings/${id}`, {
+          method: "DELETE",
+        });
+
+        if (res.ok) {
+          setPatients((prev) => prev.filter((p) => p._id !== id));
+          Swal.fire(
+            "Deleted!",
+            "The patient booking has been removed.",
+            "success"
+          );
+        } else {
+          Swal.fire("Error!", "Failed to delete booking.", "error");
+        }
+      } catch (err) {
+        console.error("Delete error:", err);
+        Swal.fire("Error!", "Something went wrong.", "error");
+      }
+    }
+  };
+
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">My Patients</h2>
-      <div className="overflow-x-auto">
-        <table className="table w-full border">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="py-2 px-4 border">SL</th>
-              <th className="py-2 px-4 border">Name</th>
-              <th className="py-2 px-4 border">Email</th>
-              <th className="py-2 px-4 border">Phone</th>
-              <th className="py-2 px-4 border">Gender</th>
-              <th className="py-2 px-4 border">Time</th>
-              <th className="py-2 px-4 border">Status</th>
+    <div className="p-6">
+      <h2 className="text-3xl font-bold text-naviblue mb-6">👨‍⚕️ My Patients</h2>
+      <div className="overflow-x-auto shadow-md rounded-xl bg-white">
+        <table className="min-w-full text-sm text-gray-700">
+          <thead className="bg-blue-50 text-gray-700 uppercase">
+            <tr>
+              <th className="py-3 px-4 text-left">SL</th>
+              <th className="py-3 px-4 text-left">Name</th>
+              <th className="py-3 px-4 text-left">Email</th>
+              <th className="py-3 px-4 text-left">Phone</th>
+              <th className="py-3 px-4 text-left">Gender</th>
+              <th className="py-3 px-4 text-left">Time</th>
+              <th className="py-3 px-4 text-left">Status</th>
+              <th className="py-3 px-4 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
             {patients.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-gray-500">
+                <td colSpan="8" className="text-center py-6 text-gray-400">
                   No patients found.
                 </td>
               </tr>
             ) : (
               patients.map((patient, i) => (
-                <tr key={patient._id}>
-                  <td className="py-2 px-4 border">{i + 1}</td>
-                  <td className="py-2 px-4 border">{patient.userName}</td>
-                  <td className="py-2 px-4 border">{patient.userEmail}</td>
-                  <td className="py-2 px-4 border">{patient.phone || "N/A"}</td>
-                  <td className="py-2 px-4 border">
-                    {patient.gender || "N/A"}
+                <tr
+                  key={patient._id}
+                  className="hover:bg-gray-50 transition-all duration-200"
+                >
+                  <td className="py-3 px-4">{i + 1}</td>
+                  <td className="py-3 px-4">{patient.userName}</td>
+                  <td className="py-3 px-4">{patient.userEmail}</td>
+                  <td className="py-3 px-4">{patient.phone || "N/A"}</td>
+                  <td className="py-3 px-4">{patient.gender || "N/A"}</td>
+                  <td className="py-3 px-4">{patient.appointmentTime}</td>
+                  <td className="py-3 px-4">{patient.status}</td>
+                  <td className="py-3 px-4 text-center">
+                    <button
+                      onClick={() => handleDelete(patient._id)}
+                      className="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-full transition-all"
+                      title="Delete"
+                    >
+                      <FaTrash />
+                    </button>
                   </td>
-                  <td className="py-2 px-4 border">
-                    {patient.appointmentTime}
-                  </td>
-                  <td className="py-2 px-4 border">{patient.status}</td>
                 </tr>
               ))
             )}

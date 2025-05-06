@@ -17,74 +17,39 @@ import MyPatients from "@/pages/Dashboard/Doctor/MyPatients/MyPatients";
 import SetSchedule from "@/pages/Dashboard/Doctor/SetSchedule/SetSchedule";
 import Signup from "@/pages/Authentication/Signup";
 import Checkout from "@/pages/Checkout/Checkout";
-
 import ManageDoctor from "@/pages/Dashboard/Admin/ManageDoctor/ManageDoctor";
 import UpdateDoctor from "@/pages/Dashboard/Admin/UpdateDoctor/UpdateDoctor";
-import { createBrowserRouter } from "react-router-dom";
 import Payment from "@/pages/Payments/Payment";
+import PaymentSuccess from "@/pages/Payments/PaymentSuccess";
+// import PaymentHistory from "@/pages/Payments/PaymentHistory"; // ✅ Missing import fixed
+
+import PrivateRoutes from "../PrivateRoutes/PrivateRoutes";
+import AdminRoute from "../AdminRoute/AdminRoute";
+import DoctorRoute from "../DoctorRoute/DoctorRoute"; // ✅ Missing import fixed
+
+import { createBrowserRouter } from "react-router-dom";
+import PaymentHistory from "@/pages/Dashboard/User/PaymentHistory/PaymentHistory";
 
 // Create the router instance
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Main />, // Main layout for the app
+    element: <Main />,
     children: [
-      {
-        path: "/",
-        element: <Home />, // This will render inside the Main component
-      },
-      {
-        path: "/about",
-        element: <About />,
-      },
-      {
-        path: "/contact",
-        element: <Contact />,
-      },
-      {
-        path: "/doctors",
-        element: <Doctors />,
-      },
-      {
-        path: "/doctors/:specialty?",
-        element: <Doctors />,
-      },
-      {
-        path: "/blog",
-        element: <Blog />,
-      },
-      {
-        path: "/my-profile",
-        element: <MyProfile />,
-      },
-      {
-        path: "/my-appointment",
-        element: <MyAppointment />,
-      },
-      {
-        path: "/appointment/:_id",
-        element: <Appointment />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/sign-up",
-        element: <Signup />,
-      },
-      {
-        path: "/checkout/:id",
-        element: <Checkout />,
-      },
-      {
-        path: "/payment/:id",
-        element: <Payment></Payment>,
-      },
-      {
-        path: "/payment-success",
-        element: <PaymentSuccess></PaymentSuccess>,
-      },
+      { path: "/", element: <Home /> },
+      { path: "/about", element: <About /> },
+      { path: "/contact", element: <Contact /> },
+      { path: "/doctors", element: <Doctors /> },
+      { path: "/doctors/:specialty?", element: <Doctors /> },
+      { path: "/blog", element: <Blog /> },
+      { path: "/my-profile", element: <MyProfile /> },
+      { path: "/my-appointment", element: <MyAppointment /> },
+      { path: "/appointment/:_id", element: <Appointment /> },
+      { path: "/login", element: <Login /> },
+      { path: "/sign-up", element: <Signup /> },
+      { path: "/checkout/:id", element: <Checkout /> },
+      { path: "/payment/:appointmentId", element: <Payment /> },
+      { path: "/payment-success", element: <PaymentSuccess /> },
     ],
   },
   {
@@ -95,7 +60,6 @@ export const router = createBrowserRouter([
       </PrivateRoutes>
     ),
     children: [
-      // Admin Routes
       {
         path: "admin",
         element: (
@@ -104,18 +68,9 @@ export const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
-      {
-        path: "admin/all-users",
-        element: <AllUser />,
-      },
-      {
-        path: "admin/manage-doctor",
-        element: <ManageDoctor />,
-      },
-      {
-        path: "admin/add-doctor",
-        element: <AddDoctor />,
-      },
+      { path: "admin/all-users", element: <AllUser /> },
+      { path: "admin/manage-doctor", element: <ManageDoctor /> },
+      { path: "admin/add-doctor", element: <AddDoctor /> },
       {
         path: "admin/update-doctor/:id",
         element: <UpdateDoctor />,
@@ -124,34 +79,18 @@ export const router = createBrowserRouter([
             res.json()
           ),
       },
-
-      // Doctor Routes
       {
         path: "doctor",
         element: (
           <DoctorRoute>
-            <DoctorHome></DoctorHome>
+            <DoctorHome />
           </DoctorRoute>
         ),
       },
-      {
-        path: "doctor/my-patients",
-        element: <MyPatients />,
-      },
-      {
-        path: "doctor/set-schedule",
-        element: <SetSchedule />,
-      },
-
-      // User Routes (Patient)
-      {
-        path: "user",
-        element: <MyAppointment />,
-      },
-      {
-        path: "payment-history",
-        element: <PaymentHistory></PaymentHistory>,
-      },
+      { path: "doctor/my-patients", element: <MyPatients /> },
+      { path: "doctor/set-schedule", element: <SetSchedule /> },
+      { path: "user", element: <MyAppointment /> },
+      { path: "payment-history", element: <PaymentHistory></PaymentHistory> },
     ],
   },
 ]);
