@@ -81,12 +81,12 @@ const Doctors = () => {
               <div
                 key={item._id}
                 onClick={() => navigate(`/appointment/${item._id}`)}
-                className="border rounded-lg cursor-pointer hover:shadow-md transition"
+                className="bg-white border rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer animate-fade-in"
               >
                 <img
                   src={item.img}
                   alt={item.name}
-                  className="w-full h-40 object-cover rounded-t"
+                  className="w-full object-cover transition-transform duration-500 hover:scale-110"
                 />
                 <div className="px-3 py-2">
                   <div className="flex items-center gap-2 text-green-500 text-sm my-1">

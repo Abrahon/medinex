@@ -27,13 +27,13 @@ const Navbar = () => {
     }`;
 
   return (
-    <div className="flex justify-between items-center border-b-2 py-4 px-5 md:px-10">
+    <div className="flex justify-between items-center border-b-2 py-2 px-5 md:px-10">
       {" "}
-      <Link className="text-3xl font-bold italic" to="/">
+      <Link className="text-3xl font-bold italic text-blue-900" to="/">
         MEDINEX{" "}
       </Link>
       {/* Desktop Menu */}
-      <ul className="hidden md:flex uppercase items-center space-x-8">
+      <ul className="hidden md:flex uppercase items-center space-x-6">
         <NavLink to="/" className={navLinkStyles}>
           <li>Home</li>
         </NavLink>
@@ -118,7 +118,9 @@ const Navbar = () => {
       >
         <div className="flex items-center justify-between p-2">
           {/* <img className="w-36" src={assets.logo} alt="Logo" /> */}
-          <h3 className="text-xl font-bold uppercase italic">medinex</h3>
+          <h3 className="text-xl font-bold uppercase italic text-blue-900">
+            medinex
+          </h3>
           <img
             onClick={() => setMenuShow(false)}
             className="w-7 cursor-pointer"

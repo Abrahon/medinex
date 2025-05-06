@@ -1,86 +1,83 @@
-// About.js
 import React from "react";
+import { motion } from "framer-motion";
+import about from "../../assets/assets/assets_frontend/about.jpg";
+import MeetOurTeam from "@/Components/MeetOurTeam";
 
 const About = () => {
   return (
-    <div className="text-gray-800 my-10">
-      
-      {/* Welcome Section */}
-      <section className="py-16  text-center px-5 my-4 bg-naviblue text-white">
-        <h1 className="text-4xl font-bold  mb-4">About DocToBooking</h1>
-        <p className="text-lg max-w-2xl mx-auto ">
-          At DocToBooking, we are dedicated to making healthcare accessible and convenient for everyone. 
-          Our platform enables patients to seamlessly book appointments with trusted healthcare providers, ensuring a smooth and stress-free experience.
+    <div className="px-6 md:px-20 py-12 bg-gray-50">
+      {/* Header Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-10"
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-blue-700 mb-3">
+          About Medinex
+        </h1>
+        <p className="text-gray-600 max-w-xl mx-auto text-sm md:text-base">
+          Your health is our top priority. Discover who we are and why we care
+          so deeply.
         </p>
-      </section>
+      </motion.div>
 
-      {/* Our Mission Section */}
-      <section className="py-16 text-center px-5 text-white my-4 bg-naviblue">
-        <h2 className="text-3xl font-semibold  mb-6">Our Mission</h2>
-        <p className="text-lg max-w-3xl mx-auto">
-          Our mission is to connect patients with qualified doctors to promote wellness and provide timely, quality healthcare. 
-          We believe in simplifying access to healthcare through technology and aim to improve the healthcare journey for all.
-        </p>
-      </section>
+      {/* Grid Section */}
+      <div className="grid md:grid-cols-2 gap-10 items-center">
+        {/* Left - Image */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <img
+            src={about}
+            alt="Team"
+            className="rounded-xl shadow-lg hover:shadow-2xl transition duration-300"
+          />
+        </motion.div>
 
-      {/* Core Values Section */}
-      <section className="py-16 bg-naviblue  text-center px-5 my-4">
-        <h2 className="text-3xl font-semibold text-white  mb-6">Our Core Values</h2>
-        <div className="flex flex-wrap justify-center gap-8">
-          <div className="bg-gray-50 p-8 rounded-lg shadow-lg max-w-xs">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Trust</h3>
-            <p className="text-gray-700">
-              Building trust with our users is our top priority. We ensure all providers are verified and adhere to strict quality standards.
-            </p>
-          </div>
-          <div className="bg-gray-50 p-8 rounded-lg shadow-lg max-w-xs">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Innovation</h3>
-            <p className="text-gray-700">
-              We embrace technology to create efficient, accessible, and user-friendly healthcare solutions.
-            </p>
-          </div>
-          <div className="bg-gray-50 p-8 rounded-lg shadow-lg max-w-xs">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Compassion</h3>
-            <p className="text-gray-700">
-              We put our users first and strive to support their health journeys with empathy and understanding.
-            </p>
-          </div>
-        </div>
-      </section>
+        {/* Right - Text Content */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Who We Are</h2>
+          <p className="text-gray-600 mb-4 leading-relaxed">
+            Medinex is a next-generation platform dedicated to connecting
+            patients with trusted healthcare professionals. We aim to simplify
+            healthcare access and empower users through knowledge and innovative
+            technology.
+          </p>
 
-      {/* Meet the Team Section */}
-      <section className="w-full py-16 text-center text-white px-5 py-4 bg-naviblue">
-        <h2 className="text-3xl font-semibold  mb-6">Meet the Team</h2>
-        <div className="grid grid:cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center gap-8">
-          <div className="bg-gray-50 p-8 rounded-lg shadow-lg ">
-            <img
-              src="https://via.placeholder.com/150"
-              alt="Team Member"
-              className="w-24 h-24 mx-auto rounded-full mb-4"
-            />
-            <h3 className="text-xl font-bold text-gray-900">Abrahon Mahmud Sujon</h3>
-            <p className="text-gray-700">Chief Medical Officer</p>
-          </div>
-          <div className="bg-gray-50 p-8 rounded-lg shadow-lg ">
-            <img
-              src="https://via.placeholder.com/150"
-              alt="Team Member"
-              className="w-24 h-24 mx-auto rounded-full mb-4"
-            />
-            <h3 className="text-xl font-bold text-gray-900">Jane Smith</h3>
-            <p className="text-gray-700">Head of Operations</p>
-          </div>
-          <div className="bg-gray-50 p-8 rounded-lg shadow-lg ">
-            <img
-              src="https://via.placeholder.com/150"
-              alt="Team Member"
-              className="w-24 h-24 mx-auto rounded-full mb-4"
-            />
-            <h3 className="text-xl font-bold text-gray-900">Mark Johnson</h3>
-            <p className="text-gray-700">Lead Developer</p>
-          </div>
-        </div>
-      </section>
+          <h2 className="text-xl font-semibold text-blue-600 mb-2">
+            Our Mission
+          </h2>
+          <p className="text-gray-600 mb-4">
+            To provide accessible, efficient, and quality healthcare for
+            everyone, everywhere.
+          </p>
+
+          <h2 className="text-xl font-semibold text-blue-600 mb-2">
+            Our Vision
+          </h2>
+          <p className="text-gray-600">
+            A world where every individual has seamless access to the best
+            medical support regardless of location.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Team Section (Optional) */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="mt-20 text-center"
+      >
+        <MeetOurTeam></MeetOurTeam>
+      </motion.div>
     </div>
   );
 };
