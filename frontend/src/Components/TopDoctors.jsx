@@ -18,7 +18,7 @@ const TopDoctors = () => {
       </div>
 
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {doctors.slice(0, 10).map((item, index) => (
+        {doctors.slice(0, 8).map((item, index) => (
           <div
             key={index}
             onClick={() => navigate(`/appointment/${item._id}`)}
@@ -36,7 +36,7 @@ const TopDoctors = () => {
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 <p>Available</p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-xl font-semibold text-gray-800">
                 {item.name}
               </h3>
               <p className="text-sm text-gray-500">{item.specialty}</p>

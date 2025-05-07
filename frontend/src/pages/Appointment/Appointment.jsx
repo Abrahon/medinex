@@ -15,7 +15,6 @@ const Appointment = () => {
   const [availableSchedule, setAvailableSchedule] = useState([]);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
-  console.log("slot", availableSchedule);
 
   const fetchDocInfo = async () => {
     const doc = doctors.find((d) => d._id === _id);
@@ -29,7 +28,6 @@ const Appointment = () => {
       );
       const data = await res.json();
       setAvailableSchedule(data);
-      console.log("doctor slot", data);
     } catch (err) {
       console.error("Error fetching schedule:", err);
     }
@@ -47,21 +45,19 @@ const Appointment = () => {
 
   const handleAppointment = async () => {
     if (!user) {
-      Swal.fire({
+      return Swal.fire({
         icon: "warning",
         title: "Login Required",
         text: "You must be logged in to book an appointment!",
       });
-      return;
     }
 
     if (!slotTime) {
-      Swal.fire({
+      return Swal.fire({
         icon: "warning",
         title: "Time Slot Required",
         text: "Please select a time slot!",
       });
-      return;
     }
 
     const selectedDay = availableSchedule[selectedDayIndex]?.day;
@@ -100,44 +96,58 @@ const Appointment = () => {
 
   return (
     docInfo && (
-      <div>
+      <div className="px-4 sm:px-8 py-6 max-w-7xl mx-auto">
         {/* Doctor Info Section */}
-        <div className="flex flex-col sm:flex-row gap-6 my-10">
-          <div className="bg-naviblue rounded-lg">
-            <img className="" src={docInfo.img} alt="" />
-          </div>
-          <div className="border-2 p-4 rounded-lg w-full">
-            <p className="flex text-3xl font-semibold">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left: Doctor image and info */}
+          <div className="w-full lg:w-1/3">
+            <div className="bg-naviblue rounded-lg overflow-hidden">
+              <img className="w-full h-64 " src={docInfo.img} alt="" />
+            </div>
+            <p className="flex items-center text-2xl sm:text-3xl text-gray-800 font-semibold mt-4 gap-2">
               {docInfo.name}
-              <img src={assets.verified_icon} alt="" />
+              <img className="w-6" src={assets.verified_icon} alt="" />
             </p>
-            <p className="font-semibold text-lg">
-              {docInfo.degree} - {docInfo.specialty}
-              <span className="ml-2 text-sm">{docInfo.experience} years</span>
+            <p className="font-semibold text-base sm:text-lg text-gray-700 mt-1">
+              {docInfo?.degree || "MBBS"} - {docInfo.specialty}
             </p>
-            <p>{docInfo.email}</p>
-            <p className="font-bold mt-4">About</p>
-            <p>{docInfo.about}</p>
-            <p className="font-bold mt-6">
-              Appointment fee: <span>${docInfo.fees}</span>
+            <p className="text-gray-700 text-sm sm:text-base">
+              {docInfo.email}
+            </p>
+            <p className="text-sm text-gray-700 mt-1">
+              Experience: {docInfo.experience} years
+            </p>
+          </div>
+
+          {/* Right: About and Fee */}
+          <div className="w-full lg:w-2/3 border-2 p-4 rounded-lg">
+            <p className="font-bold text-lg mb-2">About</p>
+            <p className="text-gray-700 text-sm sm:text-base">
+              {docInfo.about}
+            </p>
+            <p className="font-bold mt-6 text-base sm:text-lg">
+              Appointment Fee:{" "}
+              <span className="text-primary">${docInfo.fees}</span>
             </p>
           </div>
         </div>
 
         {/* Booking Slot Section */}
-        <div className="sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700">
-          <p>Booking Slots</p>
+        <div className="mt-10">
+          <p className="font-semibold text-lg sm:text-xl text-gray-800">
+            Booking Slots
+          </p>
 
           {/* Day Selector */}
-          <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
+          <div className="flex gap-3 items-center w-full overflow-x-auto mt-4 pb-2">
             {availableSchedule.length > 0 &&
               availableSchedule.map((item, index) => (
                 <div
                   key={index}
-                  className={`text-center px-1 py-6 min-w-24 cursor-pointer rounded-full border-2 ${
+                  className={`text-center px-3 py-2 min-w-[90px] cursor-pointer rounded-full border-2 whitespace-nowrap ${
                     selectedDayIndex === index
                       ? "bg-naviblue text-white"
-                      : "border-gray-200"
+                      : "border-gray-300 text-gray-700"
                   }`}
                   onClick={() => {
                     setSelectedDayIndex(index);
@@ -150,32 +160,37 @@ const Appointment = () => {
           </div>
 
           {/* Time Slots */}
-          <div className="flex gap-3 flex-wrap my-10">
+          <div className="flex flex-wrap gap-3 mt-6">
             {availableSchedule[selectedDayIndex]?.slots?.map((slot, i) => (
               <div
                 key={i}
                 className={`text-center py-2 px-4 cursor-pointer rounded-full border-2 ${
                   slotTime === slot
                     ? "bg-primary text-white"
-                    : "border-gray-200"
+                    : "border-gray-300 text-gray-800"
                 }`}
                 onClick={() => setSlotTime(slot)}
               >
-                <p>{slot.toLowerCase()}</p>
+                <p>{slot}</p>
               </div>
             ))}
           </div>
 
-          <button
-            onClick={handleAppointment}
-            className="bg-naviblue px-12 py-4 text-white rounded-full my-6"
-          >
-            Book An Appointment
-          </button>
+          {/* Booking Button */}
+          <div className="mt-6">
+            <button
+              onClick={handleAppointment}
+              className="bg-naviblue px-8 py-3 text-white rounded-full w-full sm:w-fit"
+            >
+              Book An Appointment
+            </button>
+          </div>
         </div>
 
         {/* Related Doctors */}
-        <RelatedDoctors docId={_id} specialty={docInfo.specialty} />
+        <div className="mt-10">
+          <RelatedDoctors docId={_id} specialty={docInfo.specialty} />
+        </div>
       </div>
     )
   );

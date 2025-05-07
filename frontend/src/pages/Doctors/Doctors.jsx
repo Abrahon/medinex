@@ -53,7 +53,7 @@ const Doctors = () => {
           {[
             "General physician",
             "Gynecologist",
-            "Dermatologist",
+            "Cardiologist",
             "Pediatrics",
             "Neurologist",
             "Gastroenterologist",
