@@ -6,7 +6,6 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [menuShow, setMenuShow] = useState(false);
-  // const \[role, setRole] = useState(null);
   const { user, role, logOut, loading } = useContext(AuthContext);
   console.log("user", role);
   const navigate = useNavigate();
@@ -83,12 +82,10 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               <img
                 className="w-10 h-10 rounded-full border border-gray-300"
-                src={
-                  user?.photoURL ||
-                  "https://i.ibb.co/6BRR4mX/default-avatar.png"
-                }
+                src={user?.photoURL || assets.profile_pic}
                 alt="Profile"
               />
+
               <p className="text-sm font-medium">
                 {user?.displayName || user?.name || "User"}
               </p>
@@ -177,7 +174,7 @@ const Navbar = () => {
           </li>
 
           {role === "admin" && (
-            <li>
+            <li className="text-sm font-semibold">
               <NavLink
                 onClick={() => setMenuShow(false)}
                 to="/dashboard/admin"

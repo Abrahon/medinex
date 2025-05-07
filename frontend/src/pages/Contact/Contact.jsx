@@ -45,7 +45,7 @@ const Contact = () => {
 
       <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 px-5">
         <div className="bg-white p-8 rounded-lg shadow-lg transform transition-all hover:scale-105">
-          <h2 className="text-2xl font-semibold text-yellow-600 mb-6">
+          <h2 className="text-2xl font-semibold text-blue-900 mb-6">
             Send Us a Message
           </h2>
           <form ref={form} onSubmit={sendEmail} className="space-y-6">
@@ -84,7 +84,7 @@ const Contact = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-yellow-600 text-white rounded-md font-semibold hover:bg-yellow-700 transition-all"
+              className="w-full py-2 px-4 bg-blue-900 text-white rounded-md font-semibold hover:bg-naviblue transition-all"
             >
               Send Message
             </button>
@@ -96,8 +96,8 @@ const Contact = () => {
             <h3 className="text-xl font-semibold text-gray-900 mb-3">
               Our Office
             </h3>
-            <p>123 Medical St., Health City</p>
-            <p>Phone: (123) 456-7890</p>
+            <p>123 Medinex St., Health City</p>
+            <p>Phone:+8801710670341</p>
             <p>Email: support@medinex.com</p>
           </div>
 

@@ -9,7 +9,6 @@ import Swal from "sweetalert2";
 import { GoogleAuthProvider } from "firebase/auth";
 
 const Login = () => {
-  // const [user, setUser] = useState('Admin')
   const { signIn, signInGoogle } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -27,7 +26,7 @@ const Login = () => {
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: "User logged in successfully",
+          title: "logged in successfully",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -45,24 +44,59 @@ const Login = () => {
   const googleProvider = new GoogleAuthProvider();
   const handleGoogleSignIn = () => {
     signInGoogle(googleProvider)
-      .then((result) => {
+      .then(async (result) => {
         const user = result.user;
-        // let userInfo = { displayName: user?.displayName, email: user?.email, uid: user?.uid, photoUrl: user?.photoURL };
-        // saveUser(userInfo);
-        // const user= result.user;
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "user signin successfully !!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        navigate("/");
-        console.log(user);
-        // show the user name
+
+        const newUser = {
+          name: user.displayName,
+          email: user.email,
+          image: user.photoURL,
+          role: "user",
+        };
+
+        try {
+          // Check if user exists
+          const res = await fetch(
+            `http://localhost:5000/users/role?email=${user.email}`
+          );
+
+          if (res.status === 404) {
+            // User not found — create user
+            await fetch("http://localhost:5000/users", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(newUser),
+            });
+          } else {
+            const data = await res.json();
+            role = data.role || "user";
+          }
+
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Signed in successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+
+          navigate("/");
+        } catch (error) {
+          console.error("Google login error:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Google login failed!",
+          });
+        }
       })
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center ">
       <motion.div

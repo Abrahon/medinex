@@ -17,7 +17,7 @@ const DoctorForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const form = e.target;
     const name = form.name.value;
     const education = form.education.value;
@@ -28,26 +28,26 @@ const DoctorForm = () => {
     const fees = form.fees.value;
     const address = form.address.value;
     const specialty = form.specialty.value;
-  
+
     try {
       let imageUrl = "";
-  
+
       // Step 1: Upload image to imgbb
       if (image) {
         const imageForm = new FormData();
         imageForm.append("image", image);
-  
+
         const imageRes = await fetch(image_hosting_api, {
           method: "POST",
           body: imageForm,
         });
-  
+
         const imageData = await imageRes.json();
         if (!imageData.success) throw new Error("Image upload failed");
-  
+
         imageUrl = imageData.data.url;
       }
-  
+
       // Step 2: Prepare doctor object
       const newDoctor = {
         name,
@@ -61,7 +61,7 @@ const DoctorForm = () => {
         specialty,
         img: imageUrl,
       };
-  
+
       // Step 3: Send doctor data to backend
       const res = await fetch("http://localhost:5000/doctors", {
         method: "POST",
@@ -88,7 +88,6 @@ const DoctorForm = () => {
       Swal.fire("Error", "Something went wrong!", "error");
     }
   };
-  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
@@ -117,7 +116,9 @@ const DoctorForm = () => {
               className="hidden"
             />
           </label>
-          <span className="ml-3 text-gray-600 text-sm">Upload doctor picture</span>
+          <span className="ml-3 text-gray-600 text-sm">
+            Upload doctor picture
+          </span>
         </div>
 
         {/* Form */}
@@ -228,7 +229,7 @@ const DoctorForm = () => {
           <div className="flex justify-center mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-500 transition-all duration-300"
+              className="bg-blue-900 text-white py-2 px-4 rounded-md hover:bg-naviblue transition-all duration-300"
             >
               Add Doctor
             </button>

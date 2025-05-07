@@ -135,7 +135,7 @@ const AllUser = () => {
                         {user.role !== "admin" && (
                           <button
                             onClick={() => handleMakeAdmin(user._id)}
-                            className="flex items-center gap-1 bg-blue-500 text-white text-sm px-2 py-1 rounded hover:bg-blue-600"
+                            className="flex items-center gap-1 bg-blue-900 text-white text-sm px-2 py-1 rounded hover:bg-naviblue"
                           >
                             <UserCog size={16} /> Make Admin
                           </button>
@@ -143,7 +143,7 @@ const AllUser = () => {
                         {user.role !== "doctor" && (
                           <button
                             onClick={() => handleMakeDoctor(user._id)}
-                            className="flex items-center gap-1 bg-indigo-500 text-white text-sm px-2 py-1 rounded hover:bg-indigo-600"
+                            className="flex items-center gap-1 bg-indigo-700 text-white text-sm px-2 py-1 rounded hover:bg-indigo-900"
                           >
                             <Stethoscope size={16} /> Make Doctor
                           </button>
@@ -161,7 +161,7 @@ const AllUser = () => {
                     {role === "admin" && (
                       <button
                         onClick={() => handleDelete(user._id)}
-                        className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white text-sm px-2 py-1 rounded"
+                        className="flex items-center gap-1 bg-red-700 hover:bg-red-800 text-white text-sm px-2 py-1 rounded"
                       >
                         <Trash2 size={16} /> Delete
                       </button>

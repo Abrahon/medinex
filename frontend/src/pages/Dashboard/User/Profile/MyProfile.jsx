@@ -136,7 +136,7 @@ const MyProfile = () => {
 
         <div className="text-center mt-8">
           <button
-            className="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-full font-medium"
+            className=" bg-blue-900 hover:bg-naviblue transition text-white px-6 py-2 rounded-full font-medium"
             onClick={() => setIsEdit(!isEdit)}
           >
             {isEdit ? "Save Information" : "Edit Profile"}

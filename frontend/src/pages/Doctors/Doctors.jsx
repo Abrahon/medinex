@@ -37,7 +37,7 @@ const Doctors = () => {
         {/* Mobile filter button */}
         <button
           className={`py-1 px-3 text-sm border rounded sm:hidden ${
-            showFilter ? "bg-blue-600 text-white" : ""
+            showFilter ? "bg-naviblue text-white" : ""
           }`}
           onClick={() => setShowFilter((prev) => !prev)}
         >
@@ -62,7 +62,7 @@ const Doctors = () => {
               key={spec}
               onClick={() => handleFilterClick(spec)}
               className={`border px-4 py-2 cursor-pointer text-center rounded ${
-                specialty === spec ? "bg-blue-600 text-white" : ""
+                specialty === spec ? "bg-naviblue text-white" : ""
               }`}
             >
               {spec}
