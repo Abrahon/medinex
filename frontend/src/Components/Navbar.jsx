@@ -30,7 +30,7 @@ const Navbar = () => {
     <div className="flex justify-between items-center border-b-2 py-2 px-5 md:px-10">
       <Link
         to="/"
-        className="text-xl md:text-3xl font-bold italic text-blue-900 px-2 md:px-4 py-1 md:py-2 rounded-lg border-2 border-blue-900 transition duration-300 hover:bg-blue-900 hover:text-white hover:shadow-lg transform hover:scale-105"
+        className="text-xl md:text-2xl font-bold italic text-blue-900 px-2 md:px-3 py-1 md:py-1 rounded-lg border-2 border-blue-900 transition duration-300 hover:bg-blue-900 hover:text-white hover:shadow-lg transform hover:scale-105"
       >
         MEDINEX
       </Link>
