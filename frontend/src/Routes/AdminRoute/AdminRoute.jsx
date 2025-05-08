@@ -1,32 +1,21 @@
-import { AuthContext } from "@/context/AuthProvider";
-import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider";
+import useAdmin from "@/hooks/useAdmin";
 
-const DoctorRoute = ({ children }) => {
+const AdminRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [isAdmin, isAdminLoading] = useAdmin();
 
-  useEffect(() => {
-    if (user?.email) {
-      fetch(`http://localhost:5000/users/role?email=${user.email}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setIsAdmin(data.role === "admin");
-          setChecking(false);
-        })
-        .catch(() => {
-          setIsDoctor(false);
-          setChecking(false);
-        });
-    } else {
-      setChecking(false);
-    }
-  }, [user]);
+  if (loading || isAdminLoading) {
+    return <div>Loading...</div>;
+  }
 
-  if (loading || checking) return <p>Loading...</p>;
+  if (user && isAdmin) {
+    return children;
+  }
 
-  return isAdmin ? children : <Navigate to="/" />;
+  return <Navigate to="/unauthorized" />;
 };
 
-export default DoctorRoute;
+export default AdminRoute;

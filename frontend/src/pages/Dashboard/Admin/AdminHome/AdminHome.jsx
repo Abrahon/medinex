@@ -16,6 +16,8 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 import { AuthContext } from "@/context/AuthProvider";
+// import axiosSecure from "@/axios/axiosSecure"; // Import axiosSecure
+import useAxiosSecure from "@/hooks/useAxiosSecure";
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1"];
 
@@ -25,18 +27,21 @@ const AdminHome = () => {
   const [appointmenstData, setAppointsmentData] = useState([]);
   const { doctors } = useContext(AppContext);
   const { user } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
-    fetch("http://localhost:5000/users")
-      .then((res) => res.json())
-      .then((data) => setAlluser(data))
+    // Fetch users using axiosSecure
+    axiosSecure
+      .get("/users")
+      .then((res) => setAlluser(res.data))
       .catch((err) => console.error("Failed to fetch users", err));
-  }, []);
+  }, []); // Empty array so it only runs once when the component mounts
 
   useEffect(() => {
-    fetch("http://localhost:5000/bookings")
-      .then((res) => res.json())
-      .then((data) => setAppointments(data))
+    // Fetch bookings using axiosSecure
+    axiosSecure
+      .get("/bookings")
+      .then((res) => setAppointments(res.data))
       .catch((err) => console.error("Failed to fetch bookings", err));
   }, []);
 
@@ -71,10 +76,11 @@ const AdminHome = () => {
     { month: "Nov", count: 0 },
     { month: "Dec", count: 0 },
   ];
+
   useEffect(() => {
-    fetch("http://localhost:5000/bookings")
-      .then((res) => res.json())
-      .then((data) => {
+    axiosSecure
+      .get("/bookings")
+      .then((res) => {
         const monthlyCounts = {};
         const months = [
           "Jan",
@@ -92,7 +98,7 @@ const AdminHome = () => {
         ];
         months.forEach((m) => (monthlyCounts[m] = 0));
 
-        data.forEach((booking) => {
+        res.data.forEach((booking) => {
           const month = new Date(booking.date).toLocaleString("default", {
             month: "short",
           });
@@ -104,7 +110,7 @@ const AdminHome = () => {
           count: monthlyCounts[m],
         }));
 
-        setAppointments(data);
+        setAppointments(res.data);
         setAppointsmentData(formattedData); // <-- New state you should define
       })
       .catch((err) => console.error("Failed to fetch bookings", err));

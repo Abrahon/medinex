@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { GoogleAuthProvider } from "firebase/auth";
 
 const Login = () => {
-  const { signIn, signInGoogle } = useContext(AuthContext);
+  const { signIn, signInGoogle, role } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSignIn = (e) => {
@@ -71,7 +71,7 @@ const Login = () => {
             });
           } else {
             const data = await res.json();
-            role = data.role || "user";
+            const role = data.role || "user";
           }
 
           Swal.fire({

@@ -1,6 +1,5 @@
-// const { createContext } = require("react");
-
 import app from "@/firebase/firebase.init";
+import useAxiosPublic from "@/hooks/useAxiosPublic";
 import axios from "axios";
 import {
   getAuth,
@@ -13,31 +12,34 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
-// import app from "./Firebase/firebase.init";
+
 export const AuthContext = createContext();
 const auth = getAuth(app);
 
 const AuthProvider = ({ children }) => {
+  const axiosPublic = useAxiosPublic();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
   const googleProvide = new GoogleAuthProvider();
 
-  // create user
+  // Create user
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // fro existing user
+  // For existing user
   const signIn = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
+
   const signInGoogle = () => {
     setLoading(true);
     return signInWithPopup(auth, googleProvide);
   };
+
   const logOut = () => {
     setLoading(true);
     setRole(null);
@@ -57,29 +59,36 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
 
       if (currentUser?.email) {
-        axios
-          .get(`http://localhost:5000/users/role?email=${currentUser.email}`)
-          .then((res) => {
-            setRole(res.data?.role); // Expects 'admin', 'doctor', 'user', etc.
-          })
-          .catch(() => setRole(null));
+        // Get JWT token from server
+        const userInfo = { email: currentUser.email };
+        axiosPublic.post("/jwt", userInfo).then((res) => {
+          if (res.data.token) {
+            localStorage.setItem("access-token", res.data.token);
+
+            // Fetch role without `useNavigate`
+            axios
+              .get(
+                `http://localhost:5000/users/role?email=${currentUser.email}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${res.data.token}`,
+                  },
+                }
+              )
+              .then((res) => {
+                setRole(res.data?.role); // Expects 'admin', 'doctor', 'user', etc.
+              })
+              .catch(() => setRole(null));
+          }
+        });
       } else {
+        localStorage.removeItem("access-token");
         setRole(null);
       }
     });
 
     return () => unsubscribe();
-  }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-  //     console.log('Current user:', currentUser);
-  //     setUser(currentUser);
-  //     setLoadaing(false);
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
+  }, [axiosPublic]);
 
   const authInfo = {
     user,
@@ -91,10 +100,9 @@ const AuthProvider = ({ children }) => {
     role,
     loading,
   };
+
   return (
-    <div>
-      <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
-    </div>
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
 };
 

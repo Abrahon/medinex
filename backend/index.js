@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -34,17 +35,55 @@ async function run() {
     const scheduleCollection = client.db("medinex").collection("schedules");
     const paymentCollection = client.db("medinex").collection("payments");
 
-    // Role-based Access
-    app.get("/users/role", async (req, res) => {
-      const email = req.query.email;
+    //Token genarate
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      // Generate the JWT token
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "7d",
+      });
 
-      // Validate input
-      if (!email) {
-        return res
-          .status(400)
-          .send({ message: "Email is required", role: null });
+      res.send({ token });
+    });
+
+    // Verify Token API
+    const verifyToken = (req, res, next) => {
+      console.log("Authorization header:", req.headers.authorization);
+      if (!req.headers.authorization) {
+        return res.status(401).send("unauthorized");
       }
 
+      const token = req.headers.authorization.split(" ")[1];
+
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) return res.status(403).send("Forbidden");
+        req.user = decoded;
+        next();
+      });
+    };
+
+    //admin veryfy API
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.user?.email;
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+
+      if (user?.role !== "admin") {
+        return res.status(403).send("Forbidden: Admins only");
+      }
+      next();
+    };
+
+    // Role-based Access API
+    app.get("/users/role", verifyToken, async (req, res) => {
+      const email = req.query.email;
+
+      // Use req.user instead of req.decoded to get the decoded email
+      if (email !== req.user.email) {
+        return res
+          .status(403)
+          .send({ message: "Forbidden access", role: null });
+      }
       try {
         const user = await userCollection.findOne({ email });
 
@@ -75,12 +114,13 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
+      console.log(req.headers);
       const users = await userCollection.find().toArray();
       res.send(users);
     });
 
-    app.delete("/users/:id", async (req, res) => {
+    app.delete("/users/:id", verifyToken, verifyAdmin, async (req, res) => {
       const userId = req.params.id;
       const result = await userCollection.deleteOne({
         _id: new ObjectId(userId),
@@ -88,23 +128,34 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/users/admin/:id", async (req, res) => {
-      const id = req.params.id;
-      const result = await userCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { role: "admin" } }
-      );
-      res.send(result);
-    });
+    app.patch(
+      "/users/admin/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.params.id;
+        const result = await userCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { role: "admin" } }
+        );
+        res.send(result);
+      }
+    );
 
-    app.patch("/users/doctor/:id", async (req, res) => {
-      const id = req.params.id;
-      const result = await userCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { role: "doctor" } }
-      );
-      res.send(result);
-    });
+    app.patch(
+      "/users/doctor/:id",
+      verifyToken,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.params.id;
+        const result = await userCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { role: "doctor" } }
+        );
+        res.send(result);
+      }
+    );
+
     app.patch("/users/user/:id", async (req, res) => {
       const id = req.params.id;
       const result = await userCollection.updateOne(
@@ -114,7 +165,7 @@ async function run() {
       res.send(result);
     });
 
-    // Doctors
+    // Doctors API start here
     app.post("/doctors", async (req, res) => {
       const newDoctor = req.body;
       if (!newDoctor.img) {
@@ -136,7 +187,7 @@ async function run() {
       res.send(doctor);
     });
 
-    app.delete("/doctors/:id", async (req, res) => {
+    app.delete("/doctors/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const result = await doctorCollection.deleteOne({
         _id: new ObjectId(id),
@@ -161,7 +212,7 @@ async function run() {
       res.send(result);
     });
 
-    // Bookings
+    // Appointment booking API start here
     app.get("/bookings", async (req, res) => {
       const userEmail = req.query.email;
       const doctorEmail = req.query.doctorEmail;
@@ -194,12 +245,6 @@ async function run() {
       res.send(result);
     });
 
-    // app.patch("/appointment/:id", async (req, res) => {
-    //   const appointment = req.body;
-    //   const result = await confrimAppointmentCollection.insertOne(appointment);
-    //   res.send(result);
-    // });
-
     app.patch("/bookings/:id", async (req, res) => {
       const id = req.params.id;
       const updateDoc = {
@@ -220,60 +265,6 @@ async function run() {
       res.send(result);
     });
 
-    // app.patch("/bookings/:id", async (req, res) => {
-    //   const id = req.params.id;
-
-    //   // Validate ObjectId
-    //   if (!ObjectId.isValid(id)) {
-    //     return res.status(400).json({ error: "Invalid booking ID" });
-    //   }
-
-    //   const updateFields = {};
-    //   const allowedFields = [
-    //     "status",
-    //     "fullName",
-    //     "email",
-    //     "phone",
-    //     "age",
-    //     "gender",
-    //     "paymentMethod",
-    //   ];
-
-    //   // Filter only allowed fields from request body
-    //   for (const field of allowedFields) {
-    //     if (req.body[field] !== undefined) {
-    //       updateFields[field] = req.body[field];
-    //     }
-    //   }
-
-    //   if (Object.keys(updateFields).length === 0) {
-    //     return res.status(400).json({ error: "No valid fields to update" });
-    //   }
-
-    //   const updateDoc = {
-    //     $set: updateFields,
-    //   };
-
-    //   try {
-    //     const result = await bookingCollection.updateOne(
-    //       { _id: new ObjectId(id) },
-    //       updateDoc
-    //     );
-
-    //     if (result.matchedCount === 0) {
-    //       return res.status(404).json({ error: "Booking not found" });
-    //     }
-
-    //     res.send({
-    //       message: "Booking updated successfully",
-    //       modifiedCount: result.modifiedCount,
-    //     });
-    //   } catch (err) {
-    //     console.error("Error updating booking:", err);
-    //     res.status(500).json({ error: "Internal server error" });
-    //   }
-    // });
-
     app.delete("/bookings/:id", async (req, res) => {
       const id = req.params.id;
       const result = await bookingCollection.deleteOne({
@@ -282,7 +273,7 @@ async function run() {
       res.send(result);
     });
 
-    // Schedules
+    // Schedules API set
     app.post("/schedules", async (req, res) => {
       const { doctorEmail, day, slots } = req.body;
 
@@ -333,7 +324,7 @@ async function run() {
       res.send(schedule?.availableDays || []);
     });
 
-    // Stripe Payment
+    // Stripe Payment API
     app.post("/create-payment-intent", async (req, res) => {
       const { fees } = req.body;
       const amount = parseInt(fees * 100);
@@ -348,49 +339,6 @@ async function run() {
         res.status(500).send({ error: err.message });
       }
     });
-
-    // app.post("/payments", async (req, res) => {
-    //   const payment = req.body;
-    //   const { appointmentId } = payment;
-    //   console.log(appointmentId);
-
-    //   if (!appointmentId || !ObjectId.isValid(appointmentId)) {
-    //     return res
-    //       .status(400)
-    //       .send({ error: "Invalid or missing appointmentId format" });
-    //   }
-
-    //   try {
-    //     const insertResult = await paymentCollection.insertOne(payment);
-
-    //     const foundBooking = await bookingCollection.findOne({
-    //       _id: new ObjectId(appointmentId),
-    //     });
-
-    //     if (!foundBooking) {
-    //       return res.status(404).send({
-    //         success: false,
-    //         message:
-    //           "Booking not found. Payment was saved, but booking not deleted.",
-    //       });
-    //     }
-
-    //     // const deleteResult = await bookingCollection.deleteOne({
-    //     //   _id: new ObjectId(appointmentId),
-    //     // });
-
-    //     // res.send({
-    //     //   success: true,
-    //     //   message: "Payment info saved & booking deleted",
-    //     //   insertedId: insertResult.insertedId,
-    //     //   deletedBooking: deleteResult.deletedCount,
-    //     // });
-    //   } catch (error) {
-    //     res
-    //       .status(500)
-    //       .send({ error: "Server error while processing payment" });
-    //   }
-    // });
 
     app.post("/payments", async (req, res) => {
       const payment = req.body;
@@ -419,7 +367,7 @@ async function run() {
     });
 
     app.get("/payment-history/:email", async (req, res) => {
-      const query = { email: req.params.email }; // ✅ correct usage
+      const query = { email: req.params.email };
       console.log("payment history", query);
       const result = await paymentCollection
         .find(query)

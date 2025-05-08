@@ -21,11 +21,9 @@ import ManageDoctor from "@/pages/Dashboard/Admin/ManageDoctor/ManageDoctor";
 import UpdateDoctor from "@/pages/Dashboard/Admin/UpdateDoctor/UpdateDoctor";
 import Payment from "@/pages/Payments/Payment";
 import PaymentSuccess from "@/pages/Payments/PaymentSuccess";
-// import PaymentHistory from "@/pages/Payments/PaymentHistory"; // ✅ Missing import fixed
 
 import PrivateRoutes from "../PrivateRoutes/PrivateRoutes";
 import AdminRoute from "../AdminRoute/AdminRoute";
-import DoctorRoute from "../DoctorRoute/DoctorRoute"; // ✅ Missing import fixed
 
 import { createBrowserRouter } from "react-router-dom";
 import PaymentHistory from "@/pages/Dashboard/User/PaymentHistory/PaymentHistory";
@@ -70,12 +68,38 @@ export const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
-      { path: "admin/all-users", element: <AllUser /> },
-      { path: "admin/manage-doctor", element: <ManageDoctor /> },
-      { path: "admin/add-doctor", element: <AddDoctor /> },
+      {
+        path: "admin/all-users",
+        element: (
+          <AdminRoute>
+            <AllUser />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "admin/manage-doctor",
+        element: (
+          <AdminRoute>
+            <ManageDoctor />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "admin/add-doctor",
+        element: (
+          <AdminRoute>
+            <AddDoctor />
+          </AdminRoute>
+        ),
+      },
+
       {
         path: "admin/update-doctor/:id",
-        element: <UpdateDoctor />,
+        element: (
+          <AdminRoute>
+            <UpdateDoctor />
+          </AdminRoute>
+        ),
         loader: ({ params }) =>
           fetch(`http://localhost:5000/doctors/${params.id}`).then((res) =>
             res.json()
@@ -83,15 +107,16 @@ export const router = createBrowserRouter([
       },
       {
         path: "doctor",
-        element: (
-          <DoctorRoute>
-            <DoctorHome />
-          </DoctorRoute>
-        ),
+        element: <DoctorHome></DoctorHome>,
       },
-      { path: "doctor/my-patients", element: <MyPatients /> },
-      { path: "doctor/set-schedule", element: <SetSchedule /> },
-
+      {
+        path: "doctor/my-patients",
+        element: <MyPatients />,
+      },
+      {
+        path: "doctor/set-schedule",
+        element: <SetSchedule />,
+      },
       { path: "user", element: <UserHome></UserHome> },
       { path: "user/profile", element: <MyProfile /> },
       {

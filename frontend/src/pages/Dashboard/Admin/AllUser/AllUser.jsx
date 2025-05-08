@@ -2,23 +2,25 @@ import React, { useEffect, useState, useContext } from "react";
 import Swal from "sweetalert2";
 import { UserCog, Stethoscope, Trash2 } from "lucide-react";
 import { AuthContext } from "@/context/AuthProvider";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
 // import { AuthContext } from "@/provider/AuthProvider";
 
 const AllUser = () => {
+  const axiosSecure = useAxiosSecure();
   const [users, setUsers] = useState([]);
   const { user, role } = useContext(AuthContext); // must expose `role` in context
 
   useEffect(() => {
-    fetch("http://localhost:5000/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data))
+    axiosSecure
+      .get("/users")
+      .then((res) => setUsers(res.data))
       .catch((err) => console.error("Failed to fetch users:", err));
-  }, []);
+  }, [axiosSecure]);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (role !== "admin") return;
 
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -26,45 +28,34 @@ const AllUser = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await fetch(`http://localhost:5000/users/${id}`, {
-            method: "DELETE",
-          });
-
-          if (res.ok) {
-            Swal.fire("Deleted!", "User has been deleted.", "success");
-            setUsers((prev) => prev.filter((user) => user._id !== id));
-          } else {
-            Swal.fire("Error", "Failed to delete user.", "error");
-          }
-        } catch (err) {
-          console.error("Error deleting user:", err);
-          Swal.fire("Error", "Something went wrong.", "error");
-        }
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosSecure.delete(`/users/${id}`);
+        if (res.status === 200) {
+          Swal.fire("Deleted!", "User has been deleted.", "success");
+          setUsers((prev) => prev.filter((user) => user._id !== id));
+        }
+      } catch (err) {
+        console.error("Error deleting user:", err);
+        Swal.fire("Error", "Something went wrong.", "error");
+      }
+    }
   };
 
   const handleMakeAdmin = async (id) => {
     if (role !== "admin") return;
 
     try {
-      const res = await fetch(`http://localhost:5000/users/admin/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (res.ok) {
-        Swal.fire("Success!", "User has been made admin.", "success");
+      const res = await axiosSecure.patch(`/users/admin/${id}`);
+      if (res.status === 200) {
+        Swal.fire("Success!", "User made an admin", "success");
         setUsers((prev) =>
           prev.map((user) =>
             user._id === id ? { ...user, role: "admin" } : user
           )
         );
-      } else {
-        Swal.fire("Error", "Failed to make admin.", "error");
       }
     } catch (error) {
       console.error("Error making admin:", error);
@@ -76,20 +67,14 @@ const AllUser = () => {
     if (role !== "admin") return;
 
     try {
-      const res = await fetch(`http://localhost:5000/users/doctor/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (res.ok) {
-        Swal.fire("Success!", "User has been made doctor.", "success");
+      const res = await axiosSecure.patch(`/users/doctor/${id}`);
+      if (res.status === 200) {
+        Swal.fire("Success!", "User made a doctor", "success");
         setUsers((prev) =>
           prev.map((user) =>
             user._id === id ? { ...user, role: "doctor" } : user
           )
         );
-      } else {
-        Swal.fire("Error", "Failed to make doctor.", "error");
       }
     } catch (error) {
       console.error("Error making doctor:", error);
