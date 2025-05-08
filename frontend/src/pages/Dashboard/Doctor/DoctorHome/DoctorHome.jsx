@@ -25,7 +25,9 @@ const DoctorHome = () => {
   useEffect(() => {
     const doctorEmail = user?.email;
     if (doctorEmail) {
-      fetch(`http://localhost:5000/bookings?doctorEmail=${doctorEmail}`)
+      fetch(
+        `https://medinex-tan.vercel.app/bookings?doctorEmail=${doctorEmail}`
+      )
         .then((res) => res.json())
         .then((data) => {
           // Normalize status to lowercase to avoid case mismatch
@@ -45,7 +47,9 @@ const DoctorHome = () => {
   useEffect(() => {
     const doctorEmail = user?.email;
     if (doctorEmail) {
-      fetch(`http://localhost:5000/schedules?doctorEmail=${doctorEmail}`)
+      fetch(
+        `https://medinex-tan.vercel.app/schedules?doctorEmail=${doctorEmail}`
+      )
         .then((res) => res.json())
         .then((data) => setSchedule(data))
         .catch((error) => {
@@ -73,7 +77,7 @@ const DoctorHome = () => {
   ];
 
   return (
-    <div className="p-6">
+    <div className="md:p-5 p-2">
       <h2 className="text-3xl font-bold mb-6">
         Welcome Doctor{" "}
         <span className="text-green-600">{user.displayName}</span>

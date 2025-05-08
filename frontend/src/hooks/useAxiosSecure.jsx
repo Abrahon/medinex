@@ -6,7 +6,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:5000", // Or your backend URL
+  baseURL: "https://medinex-tan.vercel.app", // Or your backend URL
 });
 
 const useAxiosSecure = () => {

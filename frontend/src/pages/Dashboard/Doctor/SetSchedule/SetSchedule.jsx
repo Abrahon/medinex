@@ -68,7 +68,7 @@ const SetSchedule = () => {
 
     try {
       for (const item of schedule) {
-        const res = await fetch("http://localhost:5000/schedules", {
+        const res = await fetch("https://medinex-tan.vercel.app/schedules", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

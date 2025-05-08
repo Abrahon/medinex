@@ -75,7 +75,7 @@ const Header = () => {
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
-            <div className="relative w-full h-[600px]">
+            <div className="relative w-full md:h-[600px] h-[400px]">
               <img
                 src={slide.image}
                 alt="slide"
@@ -119,9 +119,13 @@ const Header = () => {
                   {medicalIcons.map((icon, idx) => (
                     <div
                       key={idx}
-                      className="w-16 h-16 bg-white/80 rounded-xl flex items-center justify-center"
+                      className="md:w-16 w-10 md:h-16 h-10 bg-white/80 rounded-xl flex items-center justify-center"
                     >
-                      <img src={icon} alt={`icon-${idx}`} className="w-8 h-8" />
+                      <img
+                        src={icon}
+                        alt={`icon-${idx}`}
+                        className="md:w-8 w-6  md:h-8 h-6"
+                      />
                     </div>
                   ))}
                 </motion.div>

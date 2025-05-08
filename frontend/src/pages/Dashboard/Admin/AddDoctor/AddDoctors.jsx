@@ -63,7 +63,7 @@ const DoctorForm = () => {
       };
 
       // Step 3: Send doctor data to backend
-      const res = await fetch("http://localhost:5000/doctors", {
+      const res = await fetch("https://medinex-tan.vercel.app/doctors", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,8 +90,8 @@ const DoctorForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
-      <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-4xl">
+    <div className="flex justify-center items-center  bg-gray-50">
+      <div className="bg-white rounded-lg shadow-md p-5 w-full max-w-6xl">
         {/* Profile Picture Upload */}
         <div className="flex items-center mb-6">
           <label

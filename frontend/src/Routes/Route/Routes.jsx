@@ -101,8 +101,8 @@ export const router = createBrowserRouter([
           </AdminRoute>
         ),
         loader: ({ params }) =>
-          fetch(`http://localhost:5000/doctors/${params.id}`).then((res) =>
-            res.json()
+          fetch(`https://medinex-tan.vercel.app/doctors/${params.id}`).then(
+            (res) => res.json()
           ),
       },
       {

@@ -118,7 +118,7 @@ const AdminHome = () => {
 
   return (
     <motion.div
-      className="p-6"
+      className="md:p-5 p-2"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -127,7 +127,7 @@ const AdminHome = () => {
         Welcome Admin <span className="text-green-600">{user.displayName}</span>
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={<FaUser />}
           title="Total Users"
@@ -154,9 +154,9 @@ const AdminHome = () => {
         />
       </div>
 
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-1 gap-10">
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-1 gap-8">
         <motion.div
-          className="bg-white shadow rounded-2xl p-5"
+          className="bg-white shadow rounded-2xl md:p-3 p-2"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.9 }}

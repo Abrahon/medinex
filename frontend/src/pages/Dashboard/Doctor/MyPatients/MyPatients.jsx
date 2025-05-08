@@ -10,7 +10,9 @@ const MyPatients = () => {
   useEffect(() => {
     const doctorEmail = user?.email;
     if (doctorEmail) {
-      fetch(`http://localhost:5000/bookings?doctorEmail=${doctorEmail}`)
+      fetch(
+        `https://medinex-tan.vercel.app/bookings?doctorEmail=${doctorEmail}`
+      )
         .then((res) => res.json())
         .then((data) => setPatients(data))
         .catch((error) => {
@@ -33,9 +35,12 @@ const MyPatients = () => {
 
     if (result.isConfirmed) {
       try {
-        const res = await fetch(`http://localhost:5000/bookings/${id}`, {
-          method: "DELETE",
-        });
+        const res = await fetch(
+          `https://medinex-tan.vercel.app/bookings/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (res.ok) {
           setPatients((prev) => prev.filter((p) => p._id !== id));
@@ -55,7 +60,7 @@ const MyPatients = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="md:p-5 p-2">
       <h2 className="text-3xl font-bold text-naviblue mb-6">👨‍⚕️ My Patients</h2>
       <div className="overflow-x-auto shadow-md rounded-xl bg-white">
         <table className="min-w-full text-sm text-gray-700">

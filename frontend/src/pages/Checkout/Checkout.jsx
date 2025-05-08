@@ -16,7 +16,7 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    fetch(`http://localhost:5000/bookings/${id}`)
+    fetch(`https://medinex-tan.vercel.app/bookings/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setBooking(data);
@@ -39,7 +39,7 @@ const Checkout = () => {
       status: "pending",
     };
 
-    const res = await fetch(`http://localhost:5000/bookings/${id}`, {
+    const res = await fetch(`https://medinex-tan.vercel.app/bookings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatePayload),

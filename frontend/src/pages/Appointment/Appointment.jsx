@@ -24,7 +24,7 @@ const Appointment = () => {
   const fetchSchedule = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/schedules?doctorEmail=${docInfo.email}`
+        `https://medinex-tan.vercel.app/schedules?doctorEmail=${docInfo.email}`
       );
       const data = await res.json();
       setAvailableSchedule(data);
@@ -76,7 +76,7 @@ const Appointment = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/bookings", {
+      const res = await fetch("https://medinex-tan.vercel.app/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(booking),

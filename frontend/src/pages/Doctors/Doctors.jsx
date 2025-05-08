@@ -29,14 +29,14 @@ const Doctors = () => {
   };
 
   return (
-    <div className="my-16">
+    <div className="my-16 px-2">
       <p className="text-xl font-semibold mb-4">
         Browse through the doctor's specialists
       </p>
       <div className="flex flex-col sm:flex-row items-start gap-4">
         {/* Mobile filter button */}
         <button
-          className={`py-1 px-3 text-sm border rounded sm:hidden ${
+          className={`py-1 px-3 text-sm border rounded-full bg-blue-800 text-white sm:hidden ${
             showFilter ? "bg-naviblue text-white" : ""
           }`}
           onClick={() => setShowFilter((prev) => !prev)}

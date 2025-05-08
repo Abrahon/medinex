@@ -28,7 +28,7 @@ const CheckoutFrom = ({ fees, doctorName, bookingId }) => {
   useEffect(() => {
     if (!fees || !user?.email || !doctorName) return;
 
-    fetch("http://localhost:5000/create-payment-intent", {
+    fetch("https://medinex-tan.vercel.app/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fees }), // send `price`, not `amount`
@@ -93,7 +93,7 @@ const CheckoutFrom = ({ fees, doctorName, bookingId }) => {
           paymentTime: new Date().toISOString(),
           status: "pending",
         };
-        fetch("http://localhost:5000/payments", {
+        fetch("https://medinex-tan.vercel.app/payments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payment),

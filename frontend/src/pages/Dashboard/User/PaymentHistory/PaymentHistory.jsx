@@ -9,7 +9,7 @@ const PaymentHistory = () => {
   useEffect(() => {
     if (!user?.email) return;
 
-    fetch(`http://localhost:5000/payment-history/${user.email}`)
+    fetch(`https://medinex-tan.vercel.app/payment-history/${user.email}`)
       .then((res) => res.json())
       .then((data) => {
         setPayments(data);

@@ -51,9 +51,9 @@ const UpdateDoctor = () => {
         img: imageUrl,
       };
 
-      const res = await fetch(`http://localhost:5000/doctors/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`https://medinex-tan.vercel.app/doctors/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedDoctor),
       });
 
@@ -61,7 +61,7 @@ const UpdateDoctor = () => {
 
       if (data.modifiedCount > 0 || data.acknowledged) {
         Swal.fire("Success", "Doctor information updated!", "success");
-        navigate('/dashboard/admin/manage-doctor');
+        navigate("/dashboard/admin/manage-doctor");
       } else {
         Swal.fire("Info", "No changes made.", "info");
       }
@@ -99,10 +99,15 @@ const UpdateDoctor = () => {
               className="hidden"
             />
           </label>
-          <span className="ml-3 text-gray-600 text-sm">Change profile picture</span>
+          <span className="ml-3 text-gray-600 text-sm">
+            Change profile picture
+          </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
           {/* Editable Fields */}
           <div>
             <label className="block mb-1 text-gray-600">Name</label>

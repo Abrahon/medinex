@@ -12,7 +12,7 @@ const MyAppointment = () => {
 
   useEffect(() => {
     if (!userEmail) return;
-    fetch(`http://localhost:5000/bookings?email=${userEmail}`)
+    fetch(`https://medinex-tan.vercel.app/bookings?email=${userEmail}`)
       .then((res) => res.json())
       .then((data) => {
         setBookings(data);
@@ -32,9 +32,12 @@ const MyAppointment = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`http://localhost:5000/bookings/${id}`, {
-            method: "DELETE",
-          });
+          const res = await fetch(
+            `https://medinex-tan.vercel.app/bookings/${id}`,
+            {
+              method: "DELETE",
+            }
+          );
 
           if (res.ok) {
             Swal.fire("Deleted!", "Booking has been deleted.", "success");
@@ -53,7 +56,7 @@ const MyAppointment = () => {
   useEffect(() => {
     if (!user?.email) return;
 
-    fetch(`http://localhost:5000/payment-history/${user.email}`)
+    fetch(`https://medinex-tan.vercel.app/payment-history/${user.email}`)
       .then((res) => res.json())
       .then((data) => {
         setPaymentSuccess(data);

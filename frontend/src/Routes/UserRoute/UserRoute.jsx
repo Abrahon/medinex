@@ -9,7 +9,7 @@ const UserRoute = ({ children }) => {
 
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:5000/users/role?email=${user.email}`)
+      fetch(`https://medinex-tan.vercel.app/users/role?email=${user.email}`)
         .then((res) => res.json())
         .then((data) => {
           setIsUser(data.role === "user");

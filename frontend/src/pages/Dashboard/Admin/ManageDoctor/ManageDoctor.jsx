@@ -20,9 +20,12 @@ const ManageDoctor = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`http://localhost:5000/doctors/${id}`, {
-            method: "DELETE",
-          });
+          const res = await fetch(
+            `https://medinex-tan.vercel.app/doctors/${id}`,
+            {
+              method: "DELETE",
+            }
+          );
 
           if (res.ok) {
             Swal.fire("Deleted!", "Doctor has been deleted.", "success");

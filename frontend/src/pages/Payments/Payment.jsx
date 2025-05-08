@@ -15,7 +15,7 @@ const Payment = () => {
   console.log(appointmentId);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/bookings/${appointmentId}`)
+    fetch(`https://medinex-tan.vercel.app/bookings/${appointmentId}`)
       .then((res) => res.json())
       .then((data) => {
         setAppointment(data);

@@ -59,9 +59,12 @@ const Login = () => {
 
         try {
           // Step 1: Get JWT token
-          const jwtRes = await axios.post("http://localhost:5000/jwt", {
-            email: user.email,
-          });
+          const jwtRes = await axios.post(
+            "https://medinex-tan.vercel.app/jwt",
+            {
+              email: user.email,
+            }
+          );
 
           const token = jwtRes.data.token;
           localStorage.setItem("access-token", token);
@@ -70,7 +73,7 @@ const Login = () => {
           let role;
           try {
             const roleRes = await axios.get(
-              `http://localhost:5000/users/role?email=${user.email}`,
+              `https://medinex-tan.vercel.app/users/role?email=${user.email}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -81,11 +84,15 @@ const Login = () => {
           } catch (err) {
             if (err.response && err.response.status === 404) {
               // User not found → create it
-              await axios.post("http://localhost:5000/users", newUser, {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              });
+              await axios.post(
+                "https://medinex-tan.vercel.app/users",
+                newUser,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
               role = "user"; // default role
             } else {
               throw err; // some other error

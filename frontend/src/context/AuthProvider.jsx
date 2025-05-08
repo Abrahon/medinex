@@ -68,7 +68,7 @@ const AuthProvider = ({ children }) => {
             // Fetch role without `useNavigate`
             axios
               .get(
-                `http://localhost:5000/users/role?email=${currentUser.email}`,
+                `https://medinex-tan.vercel.app/users/role?email=${currentUser.email}`,
                 {
                   headers: {
                     Authorization: `Bearer ${res.data.token}`,
