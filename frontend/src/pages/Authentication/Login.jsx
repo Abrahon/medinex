@@ -1,16 +1,17 @@
 import React, { useContext, useState } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
 import { FcGoogle } from "react-icons/fc";
-
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/AuthProvider";
 import Swal from "sweetalert2";
 import { GoogleAuthProvider } from "firebase/auth";
+import axios from "axios";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
 
 const Login = () => {
-  const { signIn, signInGoogle, role } = useContext(AuthContext);
+  const { signIn, signInGoogle, setUser, setRole } = useContext(AuthContext);
   const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
 
   const handleSignIn = (e) => {
     e.preventDefault();
@@ -18,22 +19,21 @@ const Login = () => {
     const email = form.email.value;
     const password = form.password.value;
     const loginInfo = { email, password };
-    console.log("login information : ", loginInfo);
 
     signIn(email, password)
       .then((result) => {
-        console.log("successfully logon : ", result.user);
+        console.log("successfully logged in: ", result.user);
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: "logged in successfully",
+          title: "Logged in successfully",
           showConfirmButton: false,
           timer: 1500,
         });
         navigate("/");
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         Swal.fire({
           icon: "error",
           title: "Oops...",
@@ -41,7 +41,10 @@ const Login = () => {
         });
       });
   };
+
   const googleProvider = new GoogleAuthProvider();
+
+  // make sure the path is correct
   const handleGoogleSignIn = () => {
     signInGoogle(googleProvider)
       .then(async (result) => {
@@ -55,24 +58,41 @@ const Login = () => {
         };
 
         try {
-          // Check if user exists
-          const res = await fetch(
-            `http://localhost:5000/users/role?email=${user.email}`
-          );
+          // Step 1: Get JWT token
+          const jwtRes = await axios.post("http://localhost:5000/jwt", {
+            email: user.email,
+          });
 
-          if (res.status === 404) {
-            // User not found — create user
-            await fetch("http://localhost:5000/users", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(newUser),
-            });
-          } else {
-            const data = await res.json();
-            const role = data.role || "user";
+          const token = jwtRes.data.token;
+          localStorage.setItem("access-token", token);
+
+          // Step 2: Try to get the user's role
+          let role;
+          try {
+            const roleRes = await axios.get(
+              `http://localhost:5000/users/role?email=${user.email}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            role = roleRes.data.role;
+          } catch (err) {
+            if (err.response && err.response.status === 404) {
+              // User not found → create it
+              await axios.post("http://localhost:5000/users", newUser, {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+              role = "user"; // default role
+            } else {
+              throw err; // some other error
+            }
           }
+
+          // Optional: setRole(role) if you exposed it in context
 
           Swal.fire({
             position: "top-end",
@@ -145,12 +165,7 @@ const Login = () => {
           >
             Sign In
           </motion.button>
-          {/* {
-            user === 'Admin'?
-            <p className=''>Doctor Login? <span className='text-red-700 cursor-pointer underline' onClick={()=>setUser('Doctor')}>Click here</span></p>
-            :
-            <p className=''>Admin Login? <span className='text-green-600 cursor-pointer underline' onClick={()=>setUser('Admin')}>Click here</span></p>
-          } */}
+
           <div className="flex justify-center items-center mt-6">
             <button
               type="button"

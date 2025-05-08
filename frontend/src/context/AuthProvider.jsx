@@ -99,6 +99,8 @@ const AuthProvider = ({ children }) => {
     signInGoogle,
     role,
     loading,
+    setUser, // Add this
+    setRole,
   };
 
   return (

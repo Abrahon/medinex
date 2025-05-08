@@ -1,23 +1,20 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-// import { createContext } from 'react';
 import { AuthContext } from "@/context/AuthProvider";
-import { stringify } from "postcss";
 import Swal from "sweetalert2";
-// import { motion } from 'framer-motion';
 
 const Signup = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
-  // console.log(user)
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const form = event.target;
     const name = form.name.value;
-    const image = form.image.value;
+    const image =
+      form.image.value || "https://i.ibb.co/2yT7VxT/default-user.png";
     const email = form.email.value;
     const newPassword = form.newPassword.value;
     const confirmPassword = form.confirmPassword.value;
@@ -28,50 +25,43 @@ const Signup = () => {
     }
 
     createUser(email, newPassword)
-      .then((result) => {
-        // ✅ Update Firebase profile
-        updateUserProfile(name, image)
-          .then(() => {
-            const newUser = {
-              name,
-              email,
-              image,
-              role: "user", // Default role assignment
-            };
+      .then(() => {
+        return updateUserProfile(name, image);
+      })
+      .then(() => {
+        const newUser = {
+          name,
+          email,
+          image,
+          role: "user",
+        };
 
-            // ✅ Save user to your backend
-            fetch("http://localhost:5000/users", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(newUser),
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.insertedId) {
-                  form.reset();
-                  Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "User created successfully",
-                    showConfirmButton: false,
-                    timer: 1500,
-                  });
-                  navigate("/");
-                }
-              })
-              .catch((error) => {
-                console.error("Error saving user to DB:", error);
-              });
-          })
-          .catch((error) => {
-            console.error("Error updating user profile:", error);
+        return fetch("http://localhost:5000/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newUser),
+        });
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("User save response:", data); // For debugging
+
+        if (data.insertedId || data.message === "User already exists") {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "User created successfully",
+            showConfirmButton: false,
+            timer: 1500,
           });
+          navigate("/");
+        } else {
+          Swal.fire("Warning", "Unexpected response from server.", "warning");
+        }
       })
       .catch((error) => {
-        console.error("Error creating user:", error);
-        Swal.fire("Error", error.message, "error");
+        console.error("Signup error:", error);
+        Swal.fire("Error", error.message || "Something went wrong", "error");
       });
   };
 
@@ -95,12 +85,12 @@ const Signup = () => {
             <label className="block text-gray-600 mb-1">Name</label>
             <input
               type="text"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              // value={name}
               name="name"
               required
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             />
           </motion.div>
+
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -109,10 +99,9 @@ const Signup = () => {
             <label className="block text-gray-600 mb-1">Image Link</label>
             <input
               type="text"
+              name="image"
               placeholder="Paste your profile image URL"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              name="image"
-              required
             />
           </motion.div>
 
@@ -124,11 +113,10 @@ const Signup = () => {
             <label className="block text-gray-600 mb-1">Email</label>
             <input
               type="email"
-              placeholder="Enter your Email"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none "
-              // value={email}
               name="email"
               required
+              placeholder="Enter your Email"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             />
           </motion.div>
 
@@ -140,12 +128,10 @@ const Signup = () => {
             <label className="block text-gray-600 mb-1">Password</label>
             <input
               type="password"
-              placeholder="Enter your Email"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              // value={password}
-
               name="newPassword"
               required
+              placeholder="Enter password"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             />
           </motion.div>
 
@@ -157,10 +143,9 @@ const Signup = () => {
             <label className="block text-gray-600 mb-1">Confirm Password</label>
             <input
               type="password"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-              // value={confirmPassword}
               name="confirmPassword"
               required
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             />
           </motion.div>
 
@@ -172,11 +157,12 @@ const Signup = () => {
           >
             Sign Up
           </motion.button>
+
           <p className="text-sm">
-            You have already account{" "}
-            <span className="underline text-red-600 cursor-pointer">
-              <Link to="/login">Login </Link>{" "}
-            </span>
+            Already have an account?{" "}
+            <Link to="/login" className="underline text-red-600">
+              Login
+            </Link>
           </p>
         </form>
       </motion.div>

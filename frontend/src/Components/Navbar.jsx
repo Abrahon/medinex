@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { assets } from "@/assets/assets/assets_frontend/assets";
 import { AuthContext } from "@/context/AuthProvider";
 import { LogOut } from "lucide-react";
@@ -7,7 +7,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [menuShow, setMenuShow] = useState(false);
   const { user, role, logOut, loading } = useContext(AuthContext);
-  console.log("user", role);
+  // console.log(user.photoURL);
   const navigate = useNavigate();
 
   const handleLogOut = () => {
@@ -19,18 +19,22 @@ const Navbar = () => {
   };
 
   const navLinkStyles = ({ isActive }) =>
-    `${
-      isActive
-        ? "text-blue-700 border-b-2 border-blue-700"
-        : "text-gray-600 hover:text-blue-500"
-    }`;
+    `${isActive ? " border-b-2 border-blue-700" : "hover:text-blue-800"}`;
+
+  // 🔒 Prevent rendering before data is ready
+  if (loading) {
+    return <div className="text-center py-4 text-gray-500">Loading...</div>;
+  }
 
   return (
     <div className="flex justify-between items-center border-b-2 py-2 px-5 md:px-10">
-      {" "}
-      <Link className="text-3xl font-bold italic text-blue-900" to="/">
-        MEDINEX{" "}
+      <Link
+        to="/"
+        className="text-xl md:text-3xl font-bold italic text-blue-900 px-2 md:px-4 py-1 md:py-2 rounded-lg border-2 border-blue-900 transition duration-300 hover:bg-blue-900 hover:text-white hover:shadow-lg transform hover:scale-105"
+      >
+        MEDINEX
       </Link>
+
       {/* Desktop Menu */}
       <ul className="hidden md:flex uppercase items-center space-x-6">
         <NavLink to="/" className={navLinkStyles}>
@@ -49,57 +53,77 @@ const Navbar = () => {
           <li>Contact</li>
         </NavLink>
 
-        {role === "admin" && (
-          <NavLink to="/dashboard/admin" className={navLinkStyles}>
-            <li>Admin Dashboard</li>
-          </NavLink>
+        {user && role === "admin" && (
+          <li>
+            <NavLink
+              to="/dashboard/admin"
+              className="px-4 py-2 rounded-full bg-blue-800 text-white text-sm  hover:bg-naviblue transition duration-300"
+            >
+              Admin Dashboard
+            </NavLink>
+          </li>
         )}
-        {role === "doctor" && (
-          <NavLink to="/dashboard/doctor" className={navLinkStyles}>
-            <li>Doctor Dashboard</li>
-          </NavLink>
+        {user && role === "doctor" && (
+          <li>
+            <NavLink
+              to="/dashboard/doctor"
+              className="px-4 py-2 rounded-full bg-blue-800 text-white text-sm  hover:bg-naviblue transition duration-300"
+            >
+              Doctor Dashboard
+            </NavLink>
+          </li>
         )}
-        {role === "user" && (
-          <NavLink to="/dashboard/user" className={navLinkStyles}>
-            <li>Dashboard</li>
-          </NavLink>
+        {user && role === "user" && (
+          <li>
+            <NavLink
+              to="/dashboard/user"
+              className="px-4 py-2 rounded-full bg-blue-800 text-white text-sm  hover:bg-naviblue transition duration-300"
+            >
+              Dashboard
+            </NavLink>
+          </li>
         )}
       </ul>
-      {/* Profile or Login Button */}
+
+      {/* Profile / Login */}
       <div className="flex items-center gap-4">
         {user ? (
           <div className="flex items-center gap-4">
-            {/* Logout button first */}
             <button
               onClick={handleLogOut}
-              className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-sm"
+              className="hidden md:flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-sm"
             >
               <LogOut size={16} />
               Logout
             </button>
 
-            {/* Profile image and name */}
             <div className="flex items-center gap-2">
               <img
                 className="w-10 h-10 rounded-full border border-gray-300"
-                src={user?.photoURL || assets.profile_pic}
+                src={
+                  user?.photoURL ||
+                  assets.profile_pic ||
+                  "https://i.ibb.co/2yT7VxT/default-user.png"
+                }
                 alt="Profile"
+                onError={(e) =>
+                  (e.target.src = "https://i.ibb.co/2yT7VxT/default-user.png")
+                } // Fallback image
               />
 
               <p className="text-sm font-medium">
-                {user?.displayName || user?.name || "User"}
+                {user?.displayName || "User"}
               </p>
             </div>
           </div>
         ) : (
           <button
             onClick={() => navigate("/login")}
-            className="hidden md:block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+            className="hidden md:block bg-blue-800 hover:bg-blue-900 text-white px-6 py-2 rounded-full"
           >
             Create Account
           </button>
         )}
-        {/* Mobile menu button */}
         <img
           onClick={() => setMenuShow(true)}
           className="w-7 cursor-pointer md:hidden"
@@ -107,6 +131,7 @@ const Navbar = () => {
           alt="Menu"
         />
       </div>
+
       {/* Mobile Menu */}
       <div
         className={`fixed top-0 right-0 w-full h-full bg-white z-50 transform ${
@@ -114,10 +139,13 @@ const Navbar = () => {
         } transition-transform duration-300 md:hidden`}
       >
         <div className="flex items-center justify-between p-2">
-          {/* <img className="w-36" src={assets.logo} alt="Logo" /> */}
-          <h3 className="text-xl font-bold uppercase italic text-blue-900">
-            medinex
-          </h3>
+          <Link
+            to="/"
+            className="text-xl  italic text-blue-900 px-2 py-1 rounded-lg border-2 border-blue-900 transition duration-300 hover:bg-naviblue hover:text-white hover:shadow-lg transform hover:scale-105"
+          >
+            MEDINEX
+          </Link>
+
           <img
             onClick={() => setMenuShow(false)}
             className="w-7 cursor-pointer"
@@ -126,7 +154,7 @@ const Navbar = () => {
           />
         </div>
 
-        <ul className="flex flex-col items-center mt-2 space-y-2 font-semibold ">
+        <ul className="flex flex-col items-center font-medium  space-y-1.5 text-sm hover:shadow-lg transform hover:scale-105">
           <li>
             <NavLink
               onClick={() => setMenuShow(false)}
@@ -173,34 +201,52 @@ const Navbar = () => {
             </NavLink>
           </li>
 
-          {role === "admin" && (
-            <li className="text-sm font-semibold">
+          {user && role === "admin" && (
+            <li>
               <NavLink
                 onClick={() => setMenuShow(false)}
                 to="/dashboard/admin"
-                className={navLinkStyles}
+                className={({ isActive }) =>
+                  `block  text-center px-2 py-1 rounded-full  transition duration-300 ${
+                    isActive
+                      ? "bg-blue-800 text-white"
+                      : "bg-blue-800 text-white hover:bg-naviblue"
+                  }`
+                }
               >
                 Admin Dashboard
               </NavLink>
             </li>
           )}
-          {role === "doctor" && (
+          {user && role === "doctor" && (
             <li>
               <NavLink
                 onClick={() => setMenuShow(false)}
                 to="/dashboard/doctor"
-                className={navLinkStyles}
+                className={({ isActive }) =>
+                  `block  text-center px-2 py-1 rounded-full  transition duration-300 ${
+                    isActive
+                      ? "bg-blue-800 text-white"
+                      : "bg-blue-800 text-white hover:bg-naviblue"
+                  }`
+                }
               >
                 Doctor Dashboard
               </NavLink>
             </li>
           )}
-          {role === "user" && (
+          {user && role === "user" && (
             <li>
               <NavLink
                 onClick={() => setMenuShow(false)}
                 to="/dashboard/user"
-                className={navLinkStyles}
+                className={({ isActive }) =>
+                  `block  text-center px-2 py-1 rounded-full  transition duration-300 ${
+                    isActive
+                      ? "bg-blue-800 text-white"
+                      : "bg-blue-800 text-white hover:bg-naviblue"
+                  }`
+                }
               >
                 Dashboard
               </NavLink>

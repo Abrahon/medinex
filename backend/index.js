@@ -75,43 +75,39 @@ async function run() {
     };
 
     // Role-based Access API
-    app.get("/users/role", verifyToken, async (req, res) => {
+    app.get("/users/role", async (req, res) => {
       const email = req.query.email;
+      if (!email) return res.status(400).send("Email is required");
 
-      // Use req.user instead of req.decoded to get the decoded email
-      if (email !== req.user.email) {
-        return res
-          .status(403)
-          .send({ message: "Forbidden access", role: null });
-      }
-      try {
-        const user = await userCollection.findOne({ email });
+      const user = await userCollection.findOne({ email });
 
-        if (user && user.role) {
-          res.send({ role: user.role });
-        } else {
-          res
-            .status(404)
-            .send({ message: "User not found or role missing", role: null });
-        }
-      } catch (error) {
-        res
-          .status(500)
-          .send({ message: "Server error", error: error.message, role: null });
+      // 🔁 Create default user if not found
+      if (!user) {
+        await userCollection.insertOne({
+          email,
+          name: "Unknown",
+          image: "",
+          role: "user",
+        });
+        return res.send({ role: "user" });
       }
+
+      res.send({ role: user.role });
     });
 
     // Users
+    // POST: Save new user
     app.post("/users", async (req, res) => {
       const user = req.body;
-      const existingUser = await userCollection.findOne({ email: user.email });
+      const query = { email: user.email };
+      const existingUser = await userCollection.findOne(query);
 
       if (existingUser) {
-        return res.status(409).send({ message: "User already exists" });
+        return res.status(200).send({ message: "User already exists" });
       }
 
       const result = await userCollection.insertOne(user);
-      res.send(result);
+      res.send(result); // ⚠️ This MUST include insertedId
     });
 
     app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
