@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "medinex-323b4"
-  }
+    "default": "medinex-323b4",
+    "medinex": "medinex-323b4"
+  },
+  "targets": {},
+  "etags": {}
 }

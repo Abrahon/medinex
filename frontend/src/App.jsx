@@ -4,7 +4,7 @@ import { router } from "./Routes/Route/Routes";
 
 const App = () => {
   return (
-    <div className="max-w-screen-xl mx-auto mt-2">
+    <div className="mx-auto mt-2">
       <RouterProvider router={router} />
     </div>
   );
