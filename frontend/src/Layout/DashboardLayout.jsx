@@ -15,6 +15,7 @@ import {
   FaIdBadge,
   FaMoneyCheckAlt,
 } from "react-icons/fa";
+import PrintDetails from "@/pages/PrintDetails/PrintDetails";
 
 const DashboardLayout = () => {
   const { role } = useContext(AuthContext);
@@ -171,6 +172,15 @@ const DashboardLayout = () => {
                     <FaMoneyCheckAlt /> Payment History
                   </Link>
                 </li>
+                {/* <li>
+                  <Link
+                    to="/dashboard/user/print"
+                    onClick={closeSidebar}
+                    className="flex items-center gap-2 hover:underline"
+                  >
+                    Print Detrails
+                  </Link>
+                </li> */}
               </>
             )}
           </ul>

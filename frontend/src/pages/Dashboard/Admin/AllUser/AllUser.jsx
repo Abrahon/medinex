@@ -9,11 +9,15 @@ const AllUser = () => {
   const axiosSecure = useAxiosSecure();
   const [users, setUsers] = useState([]);
   const { user, role } = useContext(AuthContext); // must expose `role` in context
-
+  console.log("user name", user?.displayName);
+  // console.log("user image", user?.photoURL);
   useEffect(() => {
     axiosSecure
       .get("/users")
-      .then((res) => setUsers(res.data))
+      .then((res) => {
+        setUsers(res.data);
+        console.log(res.data);
+      })
       .catch((err) => console.error("Failed to fetch users:", err));
   }, [axiosSecure]);
 
@@ -104,12 +108,18 @@ const AllUser = () => {
                   <td className="p-3 border-b">{index + 1}</td>
                   <td className="p-3 border-b">
                     <img
-                      src={user.image || "https://via.placeholder.com/40"}
+                      src={
+                        user?.image
+
+                        // "https://via.placeholder.com/40"
+                      }
                       alt="User"
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </td>
-                  <td className="p-3 border-b">{user.name}</td>
+                  <td className="p-3 border-b">
+                    {user?.name || user?.displayName}
+                  </td>
                   <td className="p-3 border-b">{user.email}</td>
                   <td className="p-3 border-b capitalize">
                     {user.role || "user"}

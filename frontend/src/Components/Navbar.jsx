@@ -7,7 +7,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [menuShow, setMenuShow] = useState(false);
   const { user, role, logOut, loading } = useContext(AuthContext);
-  // console.log(user.photoURL);
+  console.log(user?.photoURL);
   const navigate = useNavigate();
 
   const handleLogOut = () => {
@@ -102,16 +102,16 @@ const Navbar = () => {
                 className="w-10 h-10 rounded-full border border-gray-300"
                 src={
                   user?.photoURL ||
-                  assets.profile_pic ||
-                  "https://i.ibb.co/2yT7VxT/default-user.png"
+                  "https://lh3.googleusercontent.com/a/ACg8ocLSiMXXuqgOxRJdYebjD4U-zI2NuRHfS-Wyd84-VTlGLflYY4y8=s96-c"
                 }
                 alt="Profile"
                 onError={(e) =>
-                  (e.target.src = "https://i.ibb.co/2yT7VxT/default-user.png")
+                  (e.target.src =
+                    "https://lh3.googleusercontent.com/a/ACg8ocLSiMXXuqgOxRJdYebjD4U-zI2NuRHfS-Wyd84-VTlGLflYY4y8=s96-c")
                 } // Fallback image
               />
 
-              <p className="text-sm font-medium">
+              <p className="hidden md:block text-sm font-medium">
                 {user?.displayName || "User"}
               </p>
             </div>
@@ -260,7 +260,7 @@ const Navbar = () => {
                 src={user?.photoURL || assets.profile_pic}
                 alt="Profile"
               />
-              <span>{user?.displayName}</span>
+              {/* <span>{user?.displayName}</span> */}
               <button
                 onClick={handleLogOut}
                 className="bg-red-500 text-white px-4 py-2 rounded-full mt-2"

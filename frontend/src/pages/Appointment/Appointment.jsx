@@ -139,48 +139,64 @@ const Appointment = () => {
           </p>
 
           {/* Day Selector */}
-          <div className="flex gap-3 items-center w-full overflow-x-auto mt-4 pb-2">
-            {availableSchedule.length > 0 &&
-              availableSchedule.map((item, index) => (
-                <div
-                  key={index}
-                  className={`text-center px-3 py-2 min-w-[90px] cursor-pointer rounded-full border-2 whitespace-nowrap ${
-                    selectedDayIndex === index
-                      ? "bg-naviblue text-white"
-                      : "border-gray-300 text-gray-700"
-                  }`}
-                  onClick={() => {
-                    setSelectedDayIndex(index);
-                    setSlotTime("");
-                  }}
-                >
-                  <p>{item.day}</p>
-                </div>
-              ))}
-          </div>
-
-          {/* Time Slots */}
-          <div className="flex flex-wrap gap-3 mt-6">
-            {availableSchedule[selectedDayIndex]?.slots?.map((slot, i) => (
-              <div
-                key={i}
-                className={`text-center py-2 px-4 cursor-pointer rounded-full border-2 ${
-                  slotTime === slot
-                    ? "bg-primary text-white"
-                    : "border-gray-300 text-gray-800"
-                }`}
-                onClick={() => setSlotTime(slot)}
-              >
-                <p>{slot}</p>
+          {availableSchedule.length ? (
+            <>
+              <div className="flex gap-3 items-center w-full overflow-x-auto mt-4 pb-2">
+                {availableSchedule.length > 0 &&
+                  availableSchedule.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`text-center px-3 py-2 min-w-[90px] cursor-pointer rounded-full border-2 whitespace-nowrap ${
+                        selectedDayIndex === index
+                          ? "bg-naviblue text-white"
+                          : "border-gray-300 text-gray-700"
+                      }`}
+                      onClick={() => {
+                        setSelectedDayIndex(index);
+                        setSlotTime("");
+                      }}
+                    >
+                      <p>{item.day}</p>
+                    </div>
+                  ))}
               </div>
-            ))}
-          </div>
+
+              {/* Time Slots */}
+              <div className="flex flex-wrap gap-3 mt-6">
+                {availableSchedule[selectedDayIndex]?.slots?.map((slot, i) => (
+                  <div
+                    key={i}
+                    className={`text-center py-2 px-4 cursor-pointer rounded-full border-2 ${
+                      slotTime === slot
+                        ? "bg-primary text-white"
+                        : "border-gray-300 text-gray-800"
+                    }`}
+                    onClick={() => setSlotTime(slot)}
+                  >
+                    <p>{slot}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-red-600 text-center flex items-center justify-center gap-2">
+                <span className="animate-bounce">😢</span> Schedule not
+                available
+              </p>
+            </>
+          )}
 
           {/* Booking Button */}
           <div className="mt-6">
             <button
               onClick={handleAppointment}
-              className="bg-naviblue px-8 py-3 text-white rounded-full w-full sm:w-fit"
+              disabled={!availableSchedule.length}
+              className={`px-8 py-3 rounded-full w-full sm:w-fit text-white ${
+                availableSchedule.length
+                  ? "bg-naviblue cursor-pointer"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
             >
               Book An Appointment
             </button>

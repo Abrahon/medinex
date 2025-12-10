@@ -29,6 +29,7 @@ import { createBrowserRouter } from "react-router-dom";
 import PaymentHistory from "@/pages/Dashboard/User/PaymentHistory/PaymentHistory";
 import BlogDetails from "@/pages/Home/Blog/BlogDetails";
 import UserHome from "@/pages/Dashboard/User/UserHome/UserHome";
+import PrintDetails from "@/pages/PrintDetails/PrintDetails";
 
 // Create the router instance
 export const router = createBrowserRouter([
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
       { path: "/checkout/:id", element: <Checkout /> },
       { path: "/payment/:appointmentId", element: <Payment /> },
       { path: "/payment-success", element: <PaymentSuccess /> },
+      {
+        path: "print",
+        element: <PrintDetails></PrintDetails>,
+      },
     ],
   },
   {
